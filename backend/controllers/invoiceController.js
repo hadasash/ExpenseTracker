@@ -2,7 +2,6 @@ require('dotenv').config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const path = require('path');
 const fs = require('fs');
-const { log } = require('console');
 const invoicesModel = require("../models/invoicesModel"); 
 const getInvoices = async (req, res) => {
     
@@ -10,7 +9,6 @@ const getInvoices = async (req, res) => {
     console.log(year);
     console.log(month);
 
-    
     try {
       const invoices = await invoicesModel.find({
         year: parseInt(year),

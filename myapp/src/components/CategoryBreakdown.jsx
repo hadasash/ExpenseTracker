@@ -99,25 +99,6 @@ const CategoryBreakdown = ({ selectedMonth, year, categoryTotals, loading }) => 
           </Paper>
         ))}
       </Box>
-      
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button
-          variant="contained"
-          startIcon={<AddCircleOutlineIcon />}
-          sx={{
-            borderRadius: 2,
-            textTransform: 'none',
-            px: 3,
-            py: 1,
-            backgroundColor: theme.palette.primary.main,
-            '&:hover': {
-              backgroundColor: theme.palette.primary.dark,
-            },
-          }}
-        >
-          הוספת הוצאה
-        </Button>
-      </Box>
     </Box>
   );
 };

@@ -1,10 +1,8 @@
-// src/services/apiService.js
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:3000';
 
 export const apiService = {
-  // Fetch invoices by year and month
   async getInvoicesByMonth(year, month) {
     try {
       const response = await axios.get(`${API_BASE_URL}/invoices/invoices`, {
@@ -32,7 +30,6 @@ export const apiService = {
     }
   },
 
-  // Delete invoice
   async deleteInvoice(invoiceId) {
     try {
       await axios.delete(`${API_BASE_URL}/invoices/delete_invoice/${invoiceId}`);

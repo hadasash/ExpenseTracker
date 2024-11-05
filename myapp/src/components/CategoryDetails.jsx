@@ -11,7 +11,6 @@ const CategoryDetailsPage = () => {
       <h2>פירוט הוצאות עבור {categoryName}</h2>
       <p>שנה: {year}</p>
       <p>חודש: {month}</p>
-      {/* Here you can add more details about the selected category if needed */}
     </div>
   );
 };

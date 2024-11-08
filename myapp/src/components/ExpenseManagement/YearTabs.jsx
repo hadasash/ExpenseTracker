@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Box, IconButton, MenuItem, Select, Tab, Tabs } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useTranslation } from 'react-i18next';
 
 const YearTabs = ({ selectedMonth, setSelectedMonth, setYear }) => {
+  const { t } = useTranslation(); 
   const [year, setYearState] = useState(2024);
 
   const handleYearIncrement = (increment) => {
@@ -72,8 +74,21 @@ const YearTabs = ({ selectedMonth, setSelectedMonth, setYear }) => {
           },
         }}
       >
-        {['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'].map((month, index) => (
-          <Tab key={index} label={month} value={index + 1} /> 
+        {[
+          t('January'),
+          t('February'),
+          t('March'),
+          t('April'),
+          t('May'),
+          t('June'),
+          t('July'),
+          t('August'),
+          t('September'),
+          t('October'),
+          t('November'),
+          t('December')
+        ].map((month, index) => (
+          <Tab key={index} label={month} value={index + 1} />
         ))}
       </Tabs>
     </Box>

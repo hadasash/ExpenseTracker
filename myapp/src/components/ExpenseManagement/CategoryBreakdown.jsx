@@ -1,11 +1,10 @@
 import React from 'react';
-import { Typography, Box, LinearProgress, Paper, IconButton, Button, Skeleton } from '@mui/material';
+import { Typography, Box, LinearProgress, Paper, IconButton, Skeleton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useTheme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 
-// Define category colors
 const categoryColors = {
   'Employee Salary': 'blue',
   'Marketing': 'green',
@@ -16,12 +15,14 @@ const categoryColors = {
   'Other': 'grey'
 };
 
-const CategoryBreakdown = ({ selectedMonth, year, categoryTotals, loading }) => {
+const CategoryBreakdown = ({ selectedMonth, year, categoryTotals, loading, invoices }) => {
+  const { t } = useTranslation();  // שימוש במתודת t כדי להמיר את הטקסטים לשפה המתאימה
   const navigate = useNavigate();
   const theme = useTheme();
 
   const handleCategoryClick = (year, month, categoryName) => {
-    navigate(`/${year}/${month}/details`, { state: { categoryName } });
+    const filteredInvoices = invoices.filter(invoice => invoice.category === categoryName);
+    navigate(`/${year}/${month}/details`, { state: { categoryName, invoices: filteredInvoices } });
   };
 
   // Find the highest amount for progress bar calculation
@@ -30,7 +31,7 @@ const CategoryBreakdown = ({ selectedMonth, year, categoryTotals, loading }) => 
   if (loading) {
     return (
       <Box>
-        <Typography variant="h6" sx={{ mb: 2 }}>פילוג הוצאות לפי קטגוריות</Typography>
+        <Typography variant="h6" sx={{ mb: 2 }}>{t('expenseBreakdown')}</Typography> {/* תרגום הכותרת */}
         {[1, 2, 3, 4].map((index) => (
           <Skeleton key={index} height={80} sx={{ mb: 2 }} />
         ))}
@@ -40,7 +41,7 @@ const CategoryBreakdown = ({ selectedMonth, year, categoryTotals, loading }) => 
 
   return (
     <Box>
-      <Typography variant="h6">פילוג הוצאות לפי קטגוריות - {selectedMonth} {year}</Typography>
+      <Typography variant="h6">{t('expenseBreakdown')} - {t(selectedMonth)} {year}</Typography> {/* תרגום שם החודש */}
       <Box sx={{ mb: 4 }}>
         {Object.entries(categoryTotals).map(([category, amount], index) => (
           <Paper
@@ -69,7 +70,7 @@ const CategoryBreakdown = ({ selectedMonth, year, categoryTotals, loading }) => 
                 variant="subtitle1" 
                 sx={{ fontWeight: 500, color: theme.palette.text.primary }}
               >
-                {category}
+                {t(category) || category}  {/* תרגום שם הקטגוריה */}
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Typography 
@@ -98,25 +99,6 @@ const CategoryBreakdown = ({ selectedMonth, year, categoryTotals, loading }) => 
             />
           </Paper>
         ))}
-      </Box>
-      
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button
-          variant="contained"
-          startIcon={<AddCircleOutlineIcon />}
-          sx={{
-            borderRadius: 2,
-            textTransform: 'none',
-            px: 3,
-            py: 1,
-            backgroundColor: theme.palette.primary.main,
-            '&:hover': {
-              backgroundColor: theme.palette.primary.dark,
-            },
-          }}
-        >
-          הוספת הוצאה
-        </Button>
       </Box>
     </Box>
   );

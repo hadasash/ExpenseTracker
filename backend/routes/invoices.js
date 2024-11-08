@@ -4,7 +4,7 @@ const router = express.Router();
 const invoiceController = require('../controllers/invoiceController');
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage }).array('additionalFile');
+const upload = multer({ storage }).any();
 
 router.post('/processInvoices', upload, invoiceController.processInvoices);
 

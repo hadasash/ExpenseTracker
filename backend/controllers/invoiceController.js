@@ -16,6 +16,8 @@ const getInvoices = async (req, res) => {
         year: parseInt(year),
         month: parseInt(month)
       });
+      console.log("invoices",invoices);
+      
       res.json(invoices);
     } catch (error) {
       res.status(500).json({ message: 'Error fetching invoices', error: error.message });
@@ -176,7 +178,7 @@ const saveUploadedFile = (file) => {
     fs.mkdirSync(uploadFolder, { recursive: true });
 
     const filePath = path.join(uploadFolder, file.originalname);
-    console.log("Saving file to:", filePath); // Debugging output
+    console.log("Saving file to:", filePath); 
 
     if (!file.buffer || file.buffer.length === 0) {
         console.log("File buffer is empty for:", file.originalname);

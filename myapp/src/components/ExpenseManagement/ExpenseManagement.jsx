@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Box, Alert, Typography } from '@mui/material';
+import { Container, Grid, Box, Alert, Typography, Paper, Card, CardContent } from '@mui/material';
 import YearTabs from './YearTabs';
 import ExpenseSummary from './ExpenseSummary';
 import ExpenseGraph from './ExpenseGraph';
@@ -49,54 +49,73 @@ const ExpenseManagement = () => {
     const { totalAmount, categoryTotals } = calculateTotals();
 
     return (
-        <Container>
-            <YearTabs
-                selectedMonth={selectedMonth}
-                setSelectedMonth={setSelectedMonth}
-                setYear={setYear}
-            />
+        <Container maxWidth="xl" sx={{ py: 4 }}>
+            {/* Year and Month Tabs */}
+                <YearTabs
+                    selectedMonth={selectedMonth}
+                    setSelectedMonth={setSelectedMonth}
+                    setYear={setYear}
+                />
 
+            {/* Error Message */}
             {error && (
-                <Alert severity="error" sx={{ mt: 2 }}>
+                <Alert severity="error" sx={{ mb: 3 }}>
                     {error}
                 </Alert>
             )}
 
+            {/* Expense Summary, Graph, and Breakdown */}
             {invoices.length === 0 ? (
-                <Typography variant="h6" color="textSecondary" mt={3}>
-                    No expenses recorded for {selectedMonth}/{year}.
-                </Typography>
+                <Paper elevation={1} sx={{ p: 3, textAlign: 'center', mt: 3 }}>
+                    <Typography variant="h6" color="textSecondary">
+                        No expenses recorded for {selectedMonth}/{year}.
+                    </Typography>
+                </Paper>
             ) : (
-                <Grid container spacing={2} mt={2}>
+                <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>
-                        <ExpenseSummary
-                            selectedMonth={selectedMonth}
-                            year={year}
-                            totalAmount={totalAmount}
-                            loading={loading}
-                        />
+                        <Card elevation={3}>
+                            <CardContent>
+                                <ExpenseSummary
+                                    selectedMonth={selectedMonth}
+                                    year={year}
+                                    totalAmount={totalAmount}
+                                    loading={loading}
+                                />
+                            </CardContent>
+                        </Card>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <ExpenseGraph
-                            selectedMonth={selectedMonth}
-                            year={year}
-                            invoices={invoices}
-                            loading={loading}
-                        />
+                        <Card elevation={3}>
+                            <CardContent>
+                                <ExpenseGraph
+                                    selectedMonth={selectedMonth}
+                                    categoryTotals={categoryTotals}
+                                    year={year}
+                                    invoices={invoices}
+                                    loading={loading}
+                                />
+                            </CardContent>
+                        </Card>
                     </Grid>
                     <Grid item xs={12}>
-                        <CategoryBreakdown
-                            selectedMonth={selectedMonth}
-                            year={year}
-                            categoryTotals={categoryTotals}
-                            loading={loading}
-                            invoices={invoices} 
-                        />
+                        <Card elevation={3}>
+                            <CardContent>
+                                <CategoryBreakdown
+                                    selectedMonth={selectedMonth}
+                                    year={year}
+                                    categoryTotals={categoryTotals}
+                                    loading={loading}
+                                    invoices={invoices}
+                                />
+                            </CardContent>
+                        </Card>
                     </Grid>
                 </Grid>
             )}
 
-            <Box mt={2}>
+            {/* Action Buttons */}
+            <Box mt={4} display="flex" justifyContent="flex-end">
                 <ActionButtons onUpload={apiService.processInvoice} />
             </Box>
         </Container>

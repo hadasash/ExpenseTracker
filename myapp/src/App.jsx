@@ -6,8 +6,8 @@ import ExpenseManagement from './components/ExpenseManagement/ExpenseManagement'
 import CategoryDetailsPage from './components/ExpenseManagement/CategoryDetails';
 import './App.css';
 import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from './components/LanguageSwitcher.jsx'; 
-import "./utils/i18n.js"
+import "./utils/i18n.js";
+
 const App = () => {
   const { t, i18n } = useTranslation();
   const pages = [
@@ -19,7 +19,6 @@ const App = () => {
     <Router>
       <div dir={i18n.language === 'he' ? 'rtl' : 'ltr'}>
         <AppBar pages={pages} />
-        <LanguageSwitcher /> {/* הוספת כפתור החלפת שפות */}
         <Routes>
           <Route path="/upload" element={<FileUpload />} />
           <Route path="/expenses" element={<ExpenseManagement />} />

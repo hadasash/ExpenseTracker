@@ -25,12 +25,15 @@ import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 const CategoryDetailsPage = () => {
   const { year, month } = useParams();
   const location = useLocation();
   const theme = useTheme();
-  const categoryName = location.state?.categoryName || 'קטגוריה לא ידועה';
+  const { t } = useTranslation(); 
+
+  const categoryName = location.state?.categoryName || t('categoryDetails.categoryName');
   const invoices = location.state?.invoices || [];
 
   const totalSum = invoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
@@ -92,25 +95,25 @@ const CategoryDetailsPage = () => {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             icon={WalletIcon}
-            title="סה״כ הוצאות"
+            title={t('categoryDetails.totalExpenditure')}
             value={`₪${totalSum.toLocaleString()}`}
-            subtext={`בחודש ${hebrewMonth}`}
+            subtext={`${t('January')} ${hebrewMonth}`} 
             color={theme.palette.primary.main}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             icon={ReceiptIcon}
-            title="מספר חשבוניות"
+            title={t('categoryDetails.invoicesCount')}
             value={invoices.length}
-            subtext="חשבוניות בקטגוריה"
+            subtext={t('categoryDetails.invoiceDetails')}
             color={theme.palette.secondary.main}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             icon={TrendingUpIcon}
-            title="הוצאה גבוהה ביותר"
+            title={t('categoryDetails.highestExpense')}
             value={`₪${highestInvoice?.totalAmount.toLocaleString()}`}
             subtext={highestInvoice?.providerName}
             color={theme.palette.error.main}
@@ -119,7 +122,7 @@ const CategoryDetailsPage = () => {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             icon={TrendingDownIcon}
-            title="הוצאה נמוכה ביותר"
+            title={t('categoryDetails.lowestExpense')}
             value={`₪${lowestInvoice?.totalAmount.toLocaleString()}`}
             subtext={lowestInvoice?.providerName}
             color={theme.palette.success.main}
@@ -131,18 +134,18 @@ const CategoryDetailsPage = () => {
       <Card elevation={0} sx={{ border: `1px solid ${theme.palette.divider}` }}>
         <Box p={3} display="flex" alignItems="center" gap={1}>
           <ReceiptIcon color="action" />
-          <Typography variant="h6">פירוט חשבוניות</Typography>
+          <Typography variant="h6">{t('categoryDetails.invoiceDetails')}</Typography>
         </Box>
         <Divider />
         <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell align="right" sx={{ fontWeight: 'bold' }}>תאריך</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold' }}>ספק</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold' }}>מספר חשבונית</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold' }}>סכום</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold' }}>סטטוס</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('categoryDetails.date')}</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('categoryDetails.provider')}</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('categoryDetails.invoiceNumber')}</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('categoryDetails.amount')}</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('categoryDetails.status')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -172,7 +175,7 @@ const CategoryDetailsPage = () => {
                   </TableCell>
                   <TableCell align="right">
                     <Chip
-                      label="שולם"
+                      label={t('categoryDetails.paid')}
                       size="small"
                       color="success"
                       sx={{ minWidth: 80 }}

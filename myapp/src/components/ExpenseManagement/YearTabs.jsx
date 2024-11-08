@@ -75,18 +75,7 @@ const YearTabs = ({ selectedMonth, setSelectedMonth, setYear }) => {
         }}
       >
         {[
-          t('January'),
-          t('February'),
-          t('March'),
-          t('April'),
-          t('May'),
-          t('June'),
-          t('July'),
-          t('August'),
-          t('September'),
-          t('October'),
-          t('November'),
-          t('December')
+          t('January'),t('February'),t('March'),t('April'),t('May'),t('June'),t('July'),t('August'),t('September'),t('October'),t('November'),t('December')
         ].map((month, index) => (
           <Tab key={index} label={month} value={index + 1} />
         ))}

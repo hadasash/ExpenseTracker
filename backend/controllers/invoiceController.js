@@ -74,9 +74,6 @@ const processInvoices = async (req, res) => {
                         "Other"
                       ]
                     },
-                    
-                   
-                   
                     details: {
                       type: "array",
                       description: "Detailed items listed on the invoice",
@@ -132,7 +129,7 @@ const processInvoices = async (req, res) => {
             uploadedPaths.push(filePath);
         }
 
-        const prompt = " Extract key details";
+        const prompt = "Extract key details";
         const generatedContent = await model.generateContent([prompt, ...imageParts]);
         const summary = generatedContent.response.text();
         const parsedSummary = JSON.parse(summary);

@@ -16,7 +16,7 @@ const categoryColors = {
 };
 
 const CategoryBreakdown = ({ selectedMonth, year, categoryTotals, loading, invoices }) => {
-  const { t } = useTranslation();  // שימוש במתודת t כדי להמיר את הטקסטים לשפה המתאימה
+  const { t } = useTranslation(); 
   const navigate = useNavigate();
   const theme = useTheme();
 

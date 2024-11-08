@@ -5,7 +5,7 @@
       "welcomeMessage": "ברוך הבא",
       "expenseBreakdown": "פילוג הוצאות לפי קטגוריות",
       "expenseManager": "ניהול הוצאות",
-
+  
       "total": "סך הכל",
       "failedToFetch": "נכשל ניסיון למשוך נתונים",
       "January": "ינואר",
@@ -34,7 +34,16 @@
         "invoiceNumber": "מספר חשבונית",
         "amount": "סכום",
         "status": "סטטוס",
-        "paid": "שולם"
+        "paid": "שולם",
+        "categories": {
+          "Employee Salary": "שכר עובדים",
+          "Marketing": "שיווק",
+          "Office Supplies": "ציוד משרדי",
+          "Travel Expenses": "הוצאות נסיעה",
+          "Utilities": "חשבונות שירות",
+          "food": "אוכל",
+          "Other": "אחר"
+        }
       }
     },
     "en": {
@@ -43,7 +52,7 @@
       "welcomeMessage": "Welcome",
       "expenseBreakdown": "Expense Breakdown by Category",
       "expenseManager": "Expense Manager",
-
+  
       "total": "Total",
       "failedToFetch": "Failed to Fetch Data",
       "January": "January",
@@ -72,7 +81,17 @@
         "invoiceNumber": "Invoice Number",
         "amount": "Amount",
         "status": "Status",
-        "paid": "Paid"
+        "paid": "Paid",
+        
+        "categories": {
+          "Employee Salary": "Employee Salary",
+          "Marketing": "Marketing",
+          "Office Supplies": "Office Supplies",
+          "Travel Expenses": "Travel Expenses",
+          "Utilities": "Utilities",
+          "food": "Food",
+          "Other": "Other"
+        }
       }
     }
   }

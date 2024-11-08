@@ -22,14 +22,14 @@ const getInvoices = async (req, res) => {
     }
   };
 
-const processInvoices = async (req, res) => {
+  const processInvoices = async (req, res) => {
     const uploadedPaths = []; 
 
     try {
         const googleApiKey = process.env.GOOGLE_AI_API_KEY;
         const genAI = new GoogleGenerativeAI(googleApiKey);
         
-          const generationConfig = {
+        const generationConfig = {
             temperature: 1,
             topP: 0.95,
             topK: 40,
@@ -38,106 +38,77 @@ const processInvoices = async (req, res) => {
             responseSchema: {
               type: "object",
               properties: {
-                invoice: {
-                  type: "object",
-                  properties: {
-                    invoiceId: {
-                      type: "string",
-                      description: "Unique identifier for the invoice"
-                    },
-                    providerName: {
-                      type: "string",
-                      description: ""
-                    },
-                    year: {
-                      type: "integer",
-                      description: "The year the invoice was issued"
-                    },
-                    month: {
-                      type: "integer",
-                      description: "The month the invoice was issued (1-12)"
-                    },
-                    totalAmount: {
-                      type: "number",
-                      description: "Total amount of the invoice"
-                    },
-                    category: {
-                      type: "string",
-                      description: "Category of the expense chosen from a predefined list",
-                      enum: [
-                        "Employee Salary",
-                        "Marketing",
-                        "Office Supplies",
-                        "Travel Expenses",
-                        "Utilities",
-                        "food",
-                        "Other"
-                      ]
-                    },
-                    details: {
-                      type: "array",
-                      description: "Detailed items listed on the invoice",
-                      items: {
-                        type: "object",
-                        properties: {
-                          itemName: {
-                            type: "string",
-                            description: "Name of the item"
-                          },
-                          itemCost: {
-                            type: "number",
-                            description: "Cost of the item"
-                          },
-                          quantity: {
-                            type: "integer",
-                            description: "Quantity of the item (if applicable)"
-                          }
-                        },
-                        required: [
-                          "itemName",
-                          "itemCost"
+                invoices: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      invoiceId: { type: "string" },
+                      providerName: { type: "string" },
+                      year: { type: "integer" },
+                      month: { type: "integer" },
+                      totalAmount: { type: "number" },
+                      category: {
+                        type: "string",
+                        enum: [
+                          "Employee Salary",
+                          "Marketing",
+                          "Office Supplies",
+                          "Travel Expenses",
+                          "Utilities",
+                          "food",
+                          "Other"
                         ]
                       }
                     },
-                 
-                  },
-                  required: [
-                    "invoiceId",
-                    "providerName",
-                    "year",
-                    "month",
-                    "totalAmount",
-                    "category",
-                  ]
+                    required: [
+                      "invoiceId",
+                      "providerName",
+                      "year",
+                      "month",
+                      "totalAmount",
+                      "category"
+                    ]
+                  }
                 }
               }
             },
-          };
-          const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-pro-002",generationConfig:generationConfig
-          });
+        };
+
+        const model = genAI.getGenerativeModel({
+            model: "gemini-1.5-pro-002",
+            generationConfig: generationConfig
+        });
+
         // Ensure files are present
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ message: "At least one file must be uploaded" });
         }
 
         let imageParts = [];
-        // Save the uploaded files temporarily
         for (const file of req.files) {
             const filePath = saveUploadedFile(file);
             imageParts.push({ inlineData: { mimeType: file.mimetype, data: fs.readFileSync(filePath, { encoding: 'base64' }) } });
             uploadedPaths.push(filePath);
         }
 
-        const prompt = "Extract key details";
+        const prompt = `Extract key details for each invoice provided. Ensure that each invoice is assigned its appropriate category based on its content. 
+        Make sure each invoice is processed independently, and each is categorized according to the content described in the invoice itself.`;
+        
         const generatedContent = await model.generateContent([prompt, ...imageParts]);
         const summary = generatedContent.response.text();
         const parsedSummary = JSON.parse(summary);
-        console.log("summary", JSON.stringify(parsedSummary, null, 2));        
-        // Save the parsed invoice data to MongoDB
-        const invoiceData = parsedSummary.invoice;
-        const newInvoice = new invoicesModel(invoiceData);
-        await newInvoice.save(); 
+
+        console.log("summary", JSON.stringify(parsedSummary, null, 2)); 
+
+        // Save each invoice to the database
+        const invoiceDataArray = parsedSummary.invoices;
+        for (const invoiceData of invoiceDataArray) {
+            const newInvoice = new invoicesModel(invoiceData);
+            console.log("invoiceee",newInvoice);
+            
+            await newInvoice.save();
+        }
 
         // Delete uploaded files after processing
         for (const filePath of uploadedPaths) {

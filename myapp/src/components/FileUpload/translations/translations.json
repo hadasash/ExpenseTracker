@@ -1,0 +1,23 @@
+{
+    "he": {
+      "fileUploadTitle": "העלאת חשבוניות למערכת",
+      "dragAndDrop": "גרור ושחרר קבצים כאן",
+      "clickToSelectFiles": "או לחץ כדי לבחור קבצים",
+      "selectedFiles": "קבצים שנבחרו",
+      "processing": "מעבד...",
+      "startAnalysis": "התחל ניתוח",
+      "filesProcessedSuccessfully": "הקבצים עובדו בהצלחה!",
+      "fileProcessingError": "אירעה שגיאה בעת עיבוד הקבצים. אנא נסה שוב."
+    },
+    "en": {
+      "fileUploadTitle": "Invoice Upload to System",
+      "dragAndDrop": "Drag and drop files here",
+      "clickToSelectFiles": "Or click to select files",
+      "selectedFiles": "Selected Files",
+      "processing": "Processing...",
+      "startAnalysis": "Start Analysis",
+      "filesProcessedSuccessfully": "The files were processed successfully!",
+      "fileProcessingError": "An error occurred while processing the files. Please try again."
+    }
+  }
+  

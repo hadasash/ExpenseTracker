@@ -1,7 +1,8 @@
 // i18n.js
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import translations from "../assets/translations.json"; // הנתיב לקובץ התרגום שלך (הקובץ JSON)
+import translations from "../assets/translations.json"; 
+
 
 i18n
   .use(initReactI18next) // הוספת התמיכה ב-React

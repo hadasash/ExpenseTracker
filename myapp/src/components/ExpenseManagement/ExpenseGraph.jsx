@@ -1,29 +1,7 @@
 import React, { useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { 
-  Paper, 
-  Typography, 
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Skeleton,
-  useTheme
-} from '@mui/material';
-
-const COLORS = [
-  '#2196F3', // כחול
-  '#4CAF50', // ירוק
-  '#FFC107', // צהוב
-  '#FF5722', // כתום
-  '#9C27B0', // סגול
-  '#F44336', // אדום
-  '#3F51B5', // אינדיגו
-  '#009688'  // טורקיז
-];
+import { Paper, Typography, Box, Skeleton, useTheme } from '@mui/material';
+import { categoryColors } from './categoriesConfig';
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
@@ -80,11 +58,11 @@ const ExpenseGraph = ({ categoryTotals, loading }) => {
   }
 
   const data = Object.entries(categoryTotals)
-    .map(([category, total], index) => ({
+    .map(([category, total]) => ({
       name: category,
       value: total
     }))
-    .sort((a, b) => b.value - a.value); // מיון לפי ערך יורד
+    .sort((a, b) => b.value - a.value);
 
   const totalAmount = data.reduce((sum, entry) => sum + entry.value, 0);
 
@@ -101,34 +79,11 @@ const ExpenseGraph = ({ categoryTotals, loading }) => {
     setActiveIndex(null);
   };
 
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-    const RADIAN = Math.PI / 180;
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-    if (percent < 0.05) return null; // לא מציג תוויות קטנות מדי
-
-    return (
-      <text
-        x={x}
-        y={y}
-        fill="white"
-        textAnchor="middle"
-        dominantBaseline="central"
-        style={{ fontSize: '14px', fontWeight: 'bold' }}
-      >
-        {`${(percent * 100).toFixed(0)}%`}
-      </text>
-    );
-  };
-
   return (
     <Paper elevation={3} sx={{ p: 3 }}>
       <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
         Expense Distribution by Category
       </Typography>
-      
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
         <Box sx={{ flex: 1, minHeight: 400 }}>
           <ResponsiveContainer width="100%" height={400}>
@@ -138,9 +93,8 @@ const ExpenseGraph = ({ categoryTotals, loading }) => {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={renderCustomizedLabel}
                 outerRadius={150}
-                innerRadius={75} // הופך את הפאי לדונאט
+                innerRadius={75}
                 fill="#8884d8"
                 dataKey="value"
                 onMouseEnter={onPieEnter}
@@ -148,9 +102,9 @@ const ExpenseGraph = ({ categoryTotals, loading }) => {
                 animationDuration={1000}
               >
                 {dataWithPercentages.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
-                    fill={COLORS[index % COLORS.length]}
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={categoryColors[entry.name] || theme.palette.primary.main}
                     stroke={theme.palette.background.paper}
                     strokeWidth={2}
                     style={{
@@ -161,18 +115,10 @@ const ExpenseGraph = ({ categoryTotals, loading }) => {
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
-              <Legend 
-                formatter={(value, entry) => (
-                  <span style={{ color: theme.palette.text.primary }}>
-                    {value}
-                  </span>
-                )}
-              />
+              <Legend formatter={(value) => <span style={{ color: theme.palette.text.primary }}>{value}</span>} />
             </PieChart>
           </ResponsiveContainer>
         </Box>
-
-        
       </Box>
     </Paper>
   );

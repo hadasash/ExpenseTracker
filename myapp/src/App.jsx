@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import AppBar from './components/AppBar';
-import FileUpload from './components/FileUpload';
+import FileUpload from './components/FileUpload/FileUpload.jsx';
 import ExpenseManagement from './components/ExpenseManagement/ExpenseManagement';
 import CategoryDetailsPage from './components/ExpenseManagement/CategoryDetails';
 import './App.css';

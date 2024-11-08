@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Box, Alert } from '@mui/material';
+import { Container, Grid, Box, Alert, Typography } from '@mui/material';
 import YearTabs from './YearTabs';
 import ExpenseSummary from './ExpenseSummary';
 import ExpenseGraph from './ExpenseGraph';
@@ -62,33 +62,39 @@ const ExpenseManagement = () => {
                 </Alert>
             )}
 
-            <Grid container spacing={2} mt={2}>
-                <Grid item xs={12} md={6}>
-                    <ExpenseSummary
-                        selectedMonth={selectedMonth}
-                        year={year}
-                        totalAmount={totalAmount}
-                        loading={loading}
-                    />
+            {invoices.length === 0 ? (
+                <Typography variant="h6" color="textSecondary" mt={3}>
+                    No expenses recorded for {selectedMonth}/{year}.
+                </Typography>
+            ) : (
+                <Grid container spacing={2} mt={2}>
+                    <Grid item xs={12} md={6}>
+                        <ExpenseSummary
+                            selectedMonth={selectedMonth}
+                            year={year}
+                            totalAmount={totalAmount}
+                            loading={loading}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <ExpenseGraph
+                            selectedMonth={selectedMonth}
+                            year={year}
+                            invoices={invoices}
+                            loading={loading}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <CategoryBreakdown
+                            selectedMonth={selectedMonth}
+                            year={year}
+                            categoryTotals={categoryTotals}
+                            loading={loading}
+                            invoices={invoices} 
+                        />
+                    </Grid>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                    <ExpenseGraph
-                        selectedMonth={selectedMonth}
-                        year={year}
-                        invoices={invoices}
-                        loading={loading}
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <CategoryBreakdown
-                        selectedMonth={selectedMonth}
-                        year={year}
-                        categoryTotals={categoryTotals}
-                        loading={loading}
-                        invoices={invoices} 
-                    />
-                </Grid>
-            </Grid>
+            )}
 
             <Box mt={2}>
                 <ActionButtons onUpload={apiService.processInvoice} />

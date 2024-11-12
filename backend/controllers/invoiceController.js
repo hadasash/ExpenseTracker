@@ -2,25 +2,25 @@ require('dotenv').config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const path = require('path');
 const fs = require('fs');
-const invoicesModel = require("../models/invoicesModel"); 
-const getInvoices = async (req, res) => {
+const expensesModel = require("../models/expensesModel"); 
+const getExpenses = async (req, res) => {
     
     const { year, month } = req.query;
     console.log(year);
     console.log(month);
 
     try {
-      const invoices = await invoicesModel.find({
+      const expenses = await expensesModel.find({
         year: parseInt(year),
         month: parseInt(month)
       });
-      res.json(invoices);
+      res.json(expenses);
     } catch (error) {
-      res.status(500).json({ message: 'Error fetching invoices', error: error.message });
+      res.status(500).json({ message: 'Error fetching expenses', error: error.message });
     }
   };
 
-const processInvoices = async (req, res) => {
+const processExpenses = async (req, res) => {
     const uploadedPaths = []; 
 
     try {
@@ -36,12 +36,12 @@ const processInvoices = async (req, res) => {
             responseSchema: {
               type: "object",
               properties: {
-                invoice: {
+                expense: {
                   type: "object",
                   properties: {
-                    invoiceId: {
+                    expenseId: {
                       type: "string",
-                      description: "Unique identifier for the invoice"
+                      description: "Unique identifier for the expense"
                     },
                     providerName: {
                       type: "string",
@@ -49,15 +49,15 @@ const processInvoices = async (req, res) => {
                     },
                     year: {
                       type: "integer",
-                      description: "The year the invoice was issued"
+                      description: "The year the expense was issued"
                     },
                     month: {
                       type: "integer",
-                      description: "The month the invoice was issued (1-12)"
+                      description: "The month the expense was issued (1-12)"
                     },
                     totalAmount: {
                       type: "number",
-                      description: "Total amount of the invoice"
+                      description: "Total amount of the expense"
                     },
                     category: {
                       type: "string",
@@ -77,7 +77,7 @@ const processInvoices = async (req, res) => {
                    
                     details: {
                       type: "array",
-                      description: "Detailed items listed on the invoice",
+                      description: "Detailed items listed on the expense",
                       items: {
                         type: "object",
                         properties: {
@@ -103,7 +103,7 @@ const processInvoices = async (req, res) => {
                  
                   },
                   required: [
-                    "invoiceId",
+                    "expenseId",
                     "providerName",
                     "year",
                     "month",
@@ -135,10 +135,10 @@ const processInvoices = async (req, res) => {
         const summary = generatedContent.response.text();
         const parsedSummary = JSON.parse(summary);
         console.log("summary", JSON.stringify(parsedSummary, null, 2));        
-        // Save the parsed invoice data to MongoDB
-        const invoiceData = parsedSummary.invoice;
-        const newInvoice = new invoicesModel(invoiceData);
-        await newInvoice.save(); 
+        // Save the parsed expense data to MongoDB
+        const expenseData = parsedSummary.expense;
+        const newExpense = new expensesModel(expenseData);
+        await newExpense.save(); 
 
         // Delete uploaded files after processing
         for (const filePath of uploadedPaths) {
@@ -146,14 +146,14 @@ const processInvoices = async (req, res) => {
         }
 
         res.status(200).json({ 
-            message: "Invoices processed successfully", 
+            message: "Expenses processed successfully", 
             summary: summary 
         });
 
     } catch (error) {
-        console.error('Error processing invoices:', error);
+        console.error('Error processing expenses:', error);
         res.status(500).json({ 
-            message: 'Error processing invoices', 
+            message: 'Error processing expenses', 
             error: error.message 
         });
 
@@ -190,19 +190,19 @@ const saveUploadedFile = (file) => {
     return filePath;
 };
 
-  const deleteInvoice = async (req, res) => {
-    const { invoice_id } = req.params;
+  const deleteExpense = async (req, res) => {
+    const { expense_id } = req.params;
     try {
       res.status(204).send(); 
     } catch (error) {
-      console.error('Error deleting invoice:', error);
-      res.status(500).json({ message: 'Error deleting invoice' });
+      console.error('Error deleting expense:', error);
+      res.status(500).json({ message: 'Error deleting expense' });
     }
   };
   
   module.exports = {
-    processInvoices,
-    deleteInvoice,
-    getInvoices,
+    processExpenses,
+    deleteExpense,
+    getExpenses,
   };
   

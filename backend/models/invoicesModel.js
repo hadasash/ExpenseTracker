@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
-let invoicesSchema = new mongoose.Schema({
-  invoiceId: {
+let expensesSchema = new mongoose.Schema({
+  expenseId: {
     type: String,
     required: true,
-    description: "Unique identifier for the invoice"
+    description: "Unique identifier for the expense"
   },
   providerName: {
     type: String,
@@ -14,19 +14,19 @@ let invoicesSchema = new mongoose.Schema({
   year: {
     type: Number,
     required: true,
-    description: "The year the invoice was issued"
+    description: "The year the expense was issued"
   },
   month: {
     type: Number,
     required: true,
     min: 1,
     max: 12,
-    description: "The month the invoice was issued (1-12)"
+    description: "The month the expense was issued (1-12)"
   },
   totalAmount: {
     type: Number,
     required: true,
-    description: "Total amount of the invoice"
+    description: "Total amount of the expense"
   },
   category: {
     type: String,
@@ -34,7 +34,12 @@ let invoicesSchema = new mongoose.Schema({
     required: true,
     description: "Category of the expense chosen from a predefined list"
   },
-  
+  typeOfExpense: {
+    type: String,
+    enum: ["Invoice", "Payslip"],
+    required: true,
+    description: "Type of expense"
+  },
   details: [{
     itemName: {
       type: String,
@@ -54,9 +59,9 @@ let invoicesSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    description: "Timestamp for when the invoice record was created"
+    description: "Timestamp for when the expense record was created"
   },
   
 });
 
-module.exports = mongoose.model("Invoice", invoicesSchema);
+module.exports = mongoose.model("Expense", expensesSchema);

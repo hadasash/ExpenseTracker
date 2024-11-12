@@ -10,18 +10,18 @@ import { apiService } from '../services/apiService';
 const ExpenseManagement = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(2024);
-  const [invoices, setInvoices] = useState([]);
+  const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchInvoices = async () => {
+    const fetchExpenses = async () => {
       if (!selectedMonth) return;
       
       setLoading(true);
       try {
-        const data = await apiService.getInvoicesByMonth(year, selectedMonth);
-        setInvoices(data);
+        const data = await apiService.getExpensesByMonth(year, selectedMonth);
+        setExpenses(data);
         setError(null);
       } catch (err) {
         setError('Failed to fetch expense data');
@@ -31,15 +31,15 @@ const ExpenseManagement = () => {
       }
     };
 
-    fetchInvoices();
+    fetchExpenses();
   }, [selectedMonth, year]);
 
   const calculateTotals = () => {
-    const totalAmount = invoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
+    const totalAmount = expenses.reduce((sum, expense) => sum + expense.totalAmount, 0);
     
-    const categoryTotals = invoices.reduce((acc, invoice) => {
-      const category = invoice.category;
-      acc[category] = (acc[category] || 0) + invoice.totalAmount;
+    const categoryTotals = expenses.reduce((acc, expense) => {
+      const category = expense.category;
+      acc[category] = (acc[category] || 0) + expense.totalAmount;
       return acc;
     }, {});
 
@@ -75,7 +75,7 @@ const ExpenseManagement = () => {
           <ExpenseGraph 
             selectedMonth={selectedMonth} 
             year={year}
-            invoices={invoices}
+            expenses={expenses}
             loading={loading}
           />
         </Grid>
@@ -90,7 +90,7 @@ const ExpenseManagement = () => {
       </Grid>
       
       <Box mt={2}>
-        <ActionButtons onUpload={apiService.processInvoice} />
+        <ActionButtons onUpload={apiService.processExpense} />
       </Box>
     </Container>
   );

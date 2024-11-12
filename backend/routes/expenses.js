@@ -6,10 +6,10 @@ const expenseController = require('../controllers/expenseController');
 const storage = multer.memoryStorage();
 const upload = multer({ storage }).array('additionalFile');
 
-router.post('/processExpenses', upload, expenseController.ExpenseInvoices);
+router.post('/processExpenses', upload, expenseController.processExpenses);
 
-router.delete('/delete_expense/:expense_id', invExpensetroller.deleteInvoice);
+router.delete('/delete_expense/:expense_id', expenseController.deleteExpense);
 
-router.get('/expenses', expenseExpenseler.getInvoices);
+router.get('/expenses', expenseController.getExpenses);
 
 module.exports = router;

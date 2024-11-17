@@ -10,7 +10,7 @@
       "fileProcessingError": "אירעה שגיאה בעת עיבוד הקבצים. אנא נסה שוב."
     },
     "en": {
-      "fileUploadTitle": "Invoice Upload to System",
+      "fileUploadTitle": "Expense Upload to System",
       "dragAndDrop": "Drag and drop files here",
       "clickToSelectFiles": "Or click to select files",
       "selectedFiles": "Selected Files",

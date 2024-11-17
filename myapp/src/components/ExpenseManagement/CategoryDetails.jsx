@@ -34,15 +34,15 @@ const CategoryDetailsPage = () => {
   const { t } = useTranslation(); 
 
   const categoryName = location.state?.categoryName || t('categoryDetails.categoryName');
-  const invoices = location.state?.invoices || [];
+  const expenses = location.state?.expenses || [];
 
-  const totalSum = invoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
+  const totalSum = expenses.reduce((sum, expense) => sum + expense.totalAmount, 0);
   const hebrewMonth = new Intl.DateTimeFormat('he-IL', { month: 'long' }).format(new Date(2024, parseInt(month) - 1));
   
-  // Sort invoices by amount to find highest and lowest
-  const sortedInvoices = [...invoices].sort((a, b) => b.totalAmount - a.totalAmount);
-  const highestInvoice = sortedInvoices[0];
-  const lowestInvoice = sortedInvoices[sortedInvoices.length - 1];
+  // Sort expenses by amount to find highest and lowest
+  const sortedExpenses = [...expenses].sort((a, b) => b.totalAmount - a.totalAmount);
+  const highestExpense = sortedExpenses[0];
+  const lowestExpense = sortedExpenses[sortedExpenses.length - 1];
 
   const StatCard = ({ icon: Icon, title, value, subtext, color }) => (
     <Card 
@@ -104,9 +104,9 @@ const CategoryDetailsPage = () => {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             icon={ReceiptIcon}
-            title={t('categoryDetails.invoicesCount')}
-            value={invoices.length}
-            subtext={t('categoryDetails.invoiceDetails')}
+            title={t('categoryDetails.expensesCount')}
+            value={expenses.length}
+            subtext={t('categoryDetails.expenseDetails')}
             color={theme.palette.secondary.main}
           />
         </Grid>
@@ -114,8 +114,8 @@ const CategoryDetailsPage = () => {
           <StatCard
             icon={TrendingUpIcon}
             title={t('categoryDetails.highestExpense')}
-            value={`₪${highestInvoice?.totalAmount.toLocaleString()}`}
-            subtext={highestInvoice?.providerName}
+            value={`₪${highestExpense?.totalAmount.toLocaleString()}`}
+            subtext={highestExpense?.providerName}
             color={theme.palette.error.main}
           />
         </Grid>
@@ -123,18 +123,18 @@ const CategoryDetailsPage = () => {
           <StatCard
             icon={TrendingDownIcon}
             title={t('categoryDetails.lowestExpense')}
-            value={`₪${lowestInvoice?.totalAmount.toLocaleString()}`}
-            subtext={lowestInvoice?.providerName}
+            value={`₪${lowestExpense?.totalAmount.toLocaleString()}`}
+            subtext={lowestExpense?.providerName}
             color={theme.palette.success.main}
           />
         </Grid>
       </Grid>
 
-      {/* Invoices Table */}
+      {/* Expenses Table */}
       <Card elevation={0} sx={{ border: `1px solid ${theme.palette.divider}` }}>
         <Box p={3} display="flex" alignItems="center" gap={1}>
           <ReceiptIcon color="action" />
-          <Typography variant="h6">{t('categoryDetails.invoiceDetails')}</Typography>
+          <Typography variant="h6">{t('categoryDetails.expenseDetails')}</Typography>
         </Box>
         <Divider />
         <TableContainer>
@@ -143,13 +143,13 @@ const CategoryDetailsPage = () => {
               <TableRow>
                 <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('categoryDetails.date')}</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('categoryDetails.provider')}</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('categoryDetails.invoiceNumber')}</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('categoryDetails.expenseNumber')}</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('categoryDetails.amount')}</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('categoryDetails.status')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {invoices.map((invoice, index) => (
+              {expenses.map((expense, index) => (
                 <TableRow 
                   key={index}
                   hover
@@ -159,18 +159,18 @@ const CategoryDetailsPage = () => {
                   }}
                 >
                   <TableCell align="right">
-                    {new Date(invoice.createdAt).toLocaleDateString('he-IL')}
+                    {new Date(expense.createdAt).toLocaleDateString('he-IL')}
                   </TableCell>
                   <TableCell align="right">
                     <Box display="flex" alignItems="center" gap={1}>
                       <BusinessIcon fontSize="small" color="action" />
-                      <Typography>{invoice.providerName}</Typography>
+                      <Typography>{expense.providerName}</Typography>
                     </Box>
                   </TableCell>
-                  <TableCell align="right">{invoice.invoiceId}</TableCell>
+                  <TableCell align="right">{expense.expenseId}</TableCell>
                   <TableCell align="right">
                     <Typography fontWeight="bold">
-                      ₪{invoice.totalAmount.toLocaleString()}
+                      ₪{expense.totalAmount.toLocaleString()}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">

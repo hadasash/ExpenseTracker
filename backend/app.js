@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const InvoicesRouter = require('./routes/invoices');
+const ExpensesRouter = require('./routes/expenses');
 const cors = require('cors'); 
 
 const app = express();
@@ -21,11 +21,14 @@ async function connectToDatabase() {
     console.error("Error connecting to MongoDB Atlas", err);
   }
 }
-connectToDatabase();
+(async () => {
+  await connectToDatabase();
+  console.log('Database connection established');
 
-app.use(express.json());
-app.use('/invoices', InvoicesRouter);
+  app.use(express.json());
+  app.use('/expenses', ExpensesRouter);
 
-app.listen(port, () => {
+  app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
-});
+}); 
+})();

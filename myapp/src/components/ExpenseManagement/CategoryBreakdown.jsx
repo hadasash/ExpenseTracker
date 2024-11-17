@@ -6,14 +6,14 @@ import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { categoryColors } from './categoriesConfig';
 
-const CategoryBreakdown = ({ selectedMonth, year, categoryTotals, loading, invoices }) => {
+const CategoryBreakdown = ({ selectedMonth, year, categoryTotals, loading, expenses }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
 
   const handleCategoryClick = (year, month, categoryName) => {
-    const filteredInvoices = invoices.filter(invoice => invoice.category === categoryName);
-    navigate(`/${year}/${month}/details`, { state: { categoryName, invoices: filteredInvoices } });
+    const filteredExpenses = expenses.filter(expense => expense.category === categoryName);
+    navigate(`/${year}/${month}/details`, { state: { categoryName, expenses: filteredExpenses } });
   };
 
   const maxAmount = Math.max(...Object.values(categoryTotals));

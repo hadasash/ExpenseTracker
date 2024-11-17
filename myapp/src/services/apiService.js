@@ -14,8 +14,6 @@ export const apiService = {
       throw error;
     }
   },
-
-  // Process new expense
   async processExpense(formData) {
     try {
       const response = await axios.post(`${API_BASE_URL}/expenses/processExpenses`, formData, {

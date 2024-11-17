@@ -35,7 +35,7 @@ const FileUpload = () => {
 
   const handleSubmit = async () => {
     const formData = new FormData();
-    additionalFiles.forEach((file) => formData.append("additionalFiles[]", file));
+    additionalFiles.forEach((file) => formData.append("additionalFile", file));
 
     try {
       setError('');

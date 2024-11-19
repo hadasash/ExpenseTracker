@@ -2,8 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import AppBar from './components/AppBar';
 import FileUpload from './components/FileUpload';
-import ExpenseManagement from './components/ExpenseManagement';
-import CategoryDetailsPage from './components/CategoryDetails';
+import ExpenseManagement from './components/ExpenseManagement/ExpenseManagement';
+import CategoryDetailsPage from './components/ExpenseManagement/CategoryDetails';
 import './App.css'
 
 const pages = [

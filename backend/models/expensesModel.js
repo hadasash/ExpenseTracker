@@ -39,8 +39,13 @@ const baseExpenseSchema = new mongoose.Schema({
 const invoiceSpecificFields = new mongoose.Schema({
   invoiceId: {
     type: String,
+    description: 'Unique identifier for the invoice composed by invoice number and company name',
+    example: '001-hot-mobile',
+  },
+  invoiceNumber: {
+    type: Number,
     required: true,
-    description: 'Unique identifier for the invoice'
+    description: 'Invoice number'
   },
   providerName: {
     type: String,
@@ -92,14 +97,15 @@ baseExpenseSchema.pre('save', function(next) {
   if (this.expenseType === 'invoice') {
     if (this.invoiceTotal) {
       this.totalAmount = this.invoiceTotal;
+
     } else {
-      return next(new Error('Invoice total amount is required for invoice expense type'));
+      return next(new Error('Invoice total is required for invoice expense type'));
     }
   } else if (this.expenseType === 'salarySlip') {
-    if (this.netSalary) {
+    if (this.grossSalary) {
       this.totalAmount = this.grossSalary;
     } else {
-      return next(new Error('Net salary amount is required for salary slip expense type'));
+      return next(new Error('Gross salary amount is required for salary slip expense type'));
     }
   } else {
     return next(new Error('Invalid expense type'));

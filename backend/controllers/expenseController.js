@@ -10,10 +10,9 @@ const getExpenses = async (req, res) => {
   
   try {
       const expenses = await BaseExpenseModel.find({
-          //year: parseInt(year),
-          //month: parseInt(month)
+          year: parseInt(year),
+          month: parseInt(month)
       });
-      console.log('Expenses:', expenses);
       
       if (expenses.length === 0) {
         return res.status(404).json({ message: 'No expenses found for the specified month and year.' });
@@ -41,36 +40,40 @@ const processExpenses = async (req, res) => {
             responseSchema: {
                 type: "object",
                 properties: {
-                    expense: {
-                        type: "object",
-                        properties: {
-                            year: { type: "integer" },
-                            month: { type: "integer" },
-                            category: { type: "string", enum: ["Employee Salary", "Marketing", "Office Supplies", "Travel Expenses", "Utilities", "Food", "Other"] },
-                            expenseType: { type: "string", enum: ["invoice", "salarySlip"] },
-                            invoice: {
-                                type: "object",
-                                properties: {
-                                    invoiceId: { type: "string" },
-                                    providerName: { type: "string" },
-                                    invoiceTotal: { type: "number" },
+                    expenses: {
+                        type: "array",
+                        items: {
+                            type: "object",
+                            properties: {
+                                year: { type: "integer" },
+                                month: { type: "integer" },
+                                category: { type: "string", enum: ["Employee Salary", "Marketing", "Office Supplies", "Travel Expenses", "Utilities", "Food", "Other"] },
+                                expenseType: { type: "string", enum: ["invoice", "salarySlip"] },
+                                invoice: {
+                                    type: "object",
+                                    properties: {
+                                        invoiceId: { type: "string" },
+                                        invoiceNumber: { type: "number" },
+                                        providerName: { type: "string" },
+                                        invoiceTotal: { type: "number" },
+                                    },
+                                    required: ["invoiceNumber", "providerName"]
                                 },
-                                required: ["invoiceId", "providerName"]
+                                salarySlip: {
+                                    type: "object",
+                                    properties: {
+                                        employeeId: { type: "string" },
+                                        employeeName: { type: "string" },
+                                        employeeNumber: { type: "integer" },
+                                        grossSalary: { type: "number" },
+                                        netSalary: { type: "number" },
+                                        department: { type: "string" }
+                                    },
+                                    required: ["employeeId", "employeeName", "grossSalary", "netSalary"]
+                                }
                             },
-                            salarySlip: {
-                                type: "object",
-                                properties: {
-                                    employeeId: { type: "string" },
-                                    employeeName: { type: "string" },
-                                    employeeNumber: { type: "integer" },
-                                    grossSalary: { type: "number" },
-                                    netSalary: { type: "number" },
-                                    department: { type: "string" }
-                                },
-                                required: ["employeeId", "employeeName", "grossSalary", "netSalary"]
-                            }
-                        },
-                        required: ["year", "month", "category", "expenseType"]
+                            required: ["year", "month", "category", "expenseType"]
+                        }
                     }
                 }
             }
@@ -91,45 +94,64 @@ const processExpenses = async (req, res) => {
             uploadedPaths.push(filePath);
         }
 
-        const prompt = "Extract key details";
+        const prompt = "Extract key details for all expenses";
         const generatedContent = await model.generateContent([prompt, ...imageParts]);
         const summary = generatedContent.response.text();
         const parsedSummary = JSON.parse(summary);
-        console.log("summary", JSON.stringify(parsedSummary, null, 2));
-        const expenseData = parsedSummary.expense;
+        const expenses = parsedSummary.expenses;
 
-        if (expenseData.expenseType === 'invoice') {
-            if (!expenseData.invoice || !expenseData.invoice.invoiceId || !expenseData.invoice.providerName) {
-                return res.status(400).json({ message: "Missing required invoice fields" });
-            }
-            const invoiceData = {
-                ...expenseData,
-                ...expenseData.invoice
-            };
-        
-            console.log('Flattened Invoice Data:', invoiceData);
-        
-            const newExpense = new InvoiceExpenseModel(invoiceData);
-            await newExpense.save();
-
-        } else if (expenseData.expenseType === 'salarySlip') {            
-            if (!expenseData.salarySlip || !expenseData.salarySlip.employeeId || !expenseData.salarySlip.grossSalary || !expenseData.salarySlip.netSalary) {
-                return res.status(400).json({ message: "Missing required salary slip fields" });
-            }
-
-            const salarySlipData = {
-                ...expenseData,
-                ...expenseData.salarySlip
-            };
-        
-            console.log('Flattened Salary Slip Data:', salarySlipData);
-        
-            const newExpense = new SalarySlipExpenseModel(salarySlipData);
-            await newExpense.save();
-
-        } else {
-            return res.status(400).json({ message: "Invalid expense type detected" });
+        if (!Array.isArray(expenses) || expenses.length === 0) {
+            return res.status(400).json({ message: "No valid expense data found" });
         }
+
+        const savedExpenses = [];
+
+        for (const expenseData of expenses) {
+            if (expenseData.expenseType === 'invoice') {
+                if (!expenseData.invoice || !expenseData.invoice.invoiceNumber || !expenseData.invoice.providerName) {
+                    return res.status(400).json({ message: "Missing required invoice fields" });
+                }
+
+                const uniqueInvoiceId = createUniqueInvoiceId(
+                    expenseData.invoice.invoiceNumber, 
+                    expenseData.invoice.providerName,
+                );
+
+                expenseData.invoice.invoiceId = uniqueInvoiceId;
+
+                const existingInvoice = await InvoiceExpenseModel.findOne({ invoiceId: uniqueInvoiceId });
+                if (existingInvoice) {
+                    return res.status(400).json({ message: 'Invoice already exists:', uniqueInvoiceId });
+                }
+
+                const invoiceData = {
+                    ...expenseData,
+                    ...expenseData.invoice
+                };
+
+                const newExpense = new InvoiceExpenseModel(invoiceData);
+                await newExpense.save();
+                savedExpenses.push(newExpense);
+
+            } else if (expenseData.expenseType === 'salarySlip') {
+                if (!expenseData.salarySlip || !expenseData.salarySlip.employeeId || !expenseData.salarySlip.grossSalary || !expenseData.salarySlip.netSalary) {
+                    return res.status(400).json({ message: "Missing required salary slip fields" });
+                }
+
+                const salarySlipData = {
+                    ...expenseData,
+                    ...expenseData.salarySlip
+                };
+
+                const newExpense = new SalarySlipExpenseModel(salarySlipData);
+                await newExpense.save();
+                savedExpenses.push(newExpense);
+
+            } else {
+                return res.status(400).json({ message: "Invalid expense type detected" });
+            }
+        }
+
         // Delete uploaded files after processing
         for (const filePath of uploadedPaths) {
             fs.unlinkSync(filePath);
@@ -137,7 +159,7 @@ const processExpenses = async (req, res) => {
 
         res.status(200).json({
             message: "Expenses processed successfully",
-            summary: summary
+            savedExpenses
         });
 
     } catch (error) {
@@ -188,6 +210,18 @@ const deleteExpense = async (req, res) => {
         console.error('Error deleting expense:', error, expense_id);
         res.status(500).json({ message: 'Error deleting expense' });
     }
+};
+
+const cleanCompanyName = (companyName) => {
+    return companyName
+        .replace(/\s+/g, '-')  // Replace spaces with hyphens
+        .replace(/\./g, '-')   // Replace periods with hyphens
+        .toLowerCase();        // Optional: Convert to lowercase for consistency
+};
+
+const createUniqueInvoiceId = (invoiceNumber, companyName) => {
+    const sanitizedCompanyName = cleanCompanyName(companyName);    
+    return `${invoiceNumber}-${sanitizedCompanyName}`;
 };
 
 module.exports = {

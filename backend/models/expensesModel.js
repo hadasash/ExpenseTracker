@@ -60,6 +60,11 @@ const invoiceSpecificFields = new mongoose.Schema({
 });
 
 const salarySlipSpecificFields = new mongoose.Schema({
+  salarySlipId: {
+    type: String,
+    //required: true,
+    description: 'Unique identifier for the salary slip composed by employee id, company name, month and year',
+  },
   employeeId: {
     type: String,
     //required: true,
@@ -84,12 +89,11 @@ const salarySlipSpecificFields = new mongoose.Schema({
     //required: true,
     description: 'Net salary amount after deductions'
   },
-  department: {
+  companyName: {
     type: String,
-    description: 'Employee\'s department'
-  }
+    description: 'Name of the company'
+  },
 });
-
 
 baseExpenseSchema.pre('save', function(next) {
   console.log('Pre save hook for BaseExpenseModel', this);

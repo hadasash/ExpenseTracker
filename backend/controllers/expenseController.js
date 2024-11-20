@@ -67,7 +67,7 @@ const processExpenses = async (req, res) => {
                                         employeeNumber: { type: "integer" },
                                         grossSalary: { type: "number" },
                                         netSalary: { type: "number" },
-                                        department: { type: "string" }
+                                        companyName: { type: "string" },
                                     },
                                     required: ["employeeId", "employeeName", "grossSalary", "netSalary"]
                                 }
@@ -136,6 +136,21 @@ const processExpenses = async (req, res) => {
             } else if (expenseData.expenseType === 'salarySlip') {
                 if (!expenseData.salarySlip || !expenseData.salarySlip.employeeId || !expenseData.salarySlip.grossSalary || !expenseData.salarySlip.netSalary) {
                     return res.status(400).json({ message: "Missing required salary slip fields" });
+                }
+
+                const uniqueSalarySlipId = createUniqueSalarySlipId(
+                    expenseData.salarySlip.employeeId, 
+                    expenseData.year,
+                    expenseData.month,
+                    expenseData.salarySlip.grossSalary,
+                );                
+
+                expenseData.salarySlip.salarySlipId = uniqueSalarySlipId;
+
+                const existingSalarySlip = await SalarySlipExpenseModel.findOne({ salarySlipId: uniqueSalarySlipId });
+                
+                if (existingSalarySlip) {
+                    return res.status(400).json({ message: 'Salary slip already exists:', uniqueSalarySlipId });
                 }
 
                 const salarySlipData = {
@@ -214,7 +229,7 @@ const deleteExpense = async (req, res) => {
 
 const cleanCompanyName = (companyName) => {
     return companyName
-        .replace(/\s+/g, '-')  // Replace spaces with hyphens
+        .replace(/[^\w\s\-\u0590-\u05FF]/g, '') // Remove all characters except alphanumeric, spaces, hyphens, and Hebrew letters
         .replace(/\./g, '-')   // Replace periods with hyphens
         .toLowerCase();        // Optional: Convert to lowercase for consistency
 };
@@ -222,6 +237,10 @@ const cleanCompanyName = (companyName) => {
 const createUniqueInvoiceId = (invoiceNumber, companyName) => {
     const sanitizedCompanyName = cleanCompanyName(companyName);    
     return `${invoiceNumber}-${sanitizedCompanyName}`;
+};
+
+const createUniqueSalarySlipId = (employeeId, month, year, grossSalary) => {
+    return `${employeeId}-${month}-${year}-${grossSalary}`;
 };
 
 module.exports = {

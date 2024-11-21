@@ -23,6 +23,7 @@
       "nextYear": "שנה הבאה",
       "previousYear": "שנה קודמת",
       "categoryDetails": {
+        "expenseType":"סוג מסמך",
         "categoryName": "קטגוריה לא ידועה",
         "expenseId": "מזהה",
         "totalExpenditure": "סה״כ הוצאות",
@@ -44,6 +45,9 @@
           "Utilities": "חשבונות שירות",
           "food": "אוכל",
           "Other": "אחר"
+        },
+        "navbar": {
+
         }
       }
     },

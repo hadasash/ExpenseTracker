@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import i18n from './utils/i18n'; 
 import AppBar from './components/AppBar';
 import FileUpload from './components/FileUpload/FileUpload';
@@ -40,7 +39,6 @@ const App = () => {
   return (
     <I18nextProvider i18n={i18n}>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
         <Router>
           <div dir="rtl">
             <AppBar pages={pages} />

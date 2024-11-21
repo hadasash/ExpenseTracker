@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useDropzone } from 'react-dropzone';
 import {
   Box,
-  Card,
-  CardHeader,
-  CardContent,
-  Divider,
-  Typography,
   Button,
+  Typography,
+  Paper,
   IconButton,
   Snackbar,
   Alert,
   LinearProgress,
 } from '@mui/material';
-import { CloudUpload, DeleteOutline, InsertDriveFile } from '@mui/icons-material';
+import { CloudUpload, Delete, InsertDriveFile } from '@mui/icons-material';
 
 const FileUpload = () => {
   const [additionalFiles, setAdditionalFiles] = useState([]);
@@ -22,14 +18,16 @@ const FileUpload = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  const handleFileChange = (acceptedFiles) => {
+  const handleFileChange = (event) => {
+    const files = Array.from(event.target.files);
     setAdditionalFiles((prevFiles) => {
-      const newFiles = acceptedFiles.filter(
+      const newFiles = files.filter(
         (file) => !prevFiles.some((prevFile) => prevFile.name === file.name)
       );
       return [...prevFiles, ...newFiles];
     });
-  };
+};
+
 
   const handleFileRemove = (index) => {
     setAdditionalFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
@@ -37,14 +35,14 @@ const FileUpload = () => {
 
   const handleSubmit = async () => {
     const formData = new FormData();
-    additionalFiles.forEach((file) => formData.append('additionalFiles[]', file));
+    additionalFiles.forEach((file) => formData.append("additionalFile", file));
 
     try {
       setError('');
       setSuccess(false);
       setIsAnalyzing(true);
 
-      const response = await axios.post('http://127.0.0.1:3000/expenses/processExpenses', formData, {
+      const response = await axios.post("http://127.0.0.1:3000/expenses/processExpenses", formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
@@ -58,93 +56,46 @@ const FileUpload = () => {
     }
   };
 
-  // Set up the dropzone configuration
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop: handleFileChange,
-    multiple: true,
-    accept: '.pdf,.jpg,.jpeg,.png,.docx',
-  });
-
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" gap={4} p={4}>
-      <Card sx={{ width: '100%' }}>
-        <CardHeader
-          title="העלאת חשבוניות למערכת"
-          titleTypographyProps={{ variant: 'h4', color: 'primary.main' }}
-          sx={{ pb: 0 }}
-        />
-        <Divider />
-        <CardContent>
-          <Box
-            {...getRootProps()}
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              border: '2px dashed #0563B0',
-              borderRadius: 2,
-              p: 3,
-              backgroundColor: '#f0f8ff',
-              cursor: 'pointer',
-              '&:hover': {
-                backgroundColor: '#e1f5fe',
-              },
-            }}
+    <Box display="flex" flexDirection="column" alignItems="center" gap={2} p={4}>
+      <Typography variant="h4" color="primary" gutterBottom>ניתוח חשבוניות AI</Typography>
+
+      <Button
+        variant="contained"
+        component="label"
+        startIcon={<CloudUpload />}
+        disabled={isAnalyzing}
+      >
+        בחר קבצים
+        <input hidden type="file" multiple onChange={handleFileChange} />
+      </Button>
+
+      <Box width="100%">
+        {additionalFiles.map((file, index) => (
+          <Paper
+            key={index}
+            sx={{ display: 'flex', alignItems: 'center', p: 1, mt: 1, backgroundColor: '#f9f9f9' }}
+            elevation={2}
           >
-            <input {...getInputProps()} />
-            <CloudUpload sx={{ color: 'primary.main', fontSize: 40, mb: 2 }} />
-            <Typography variant="h6" color="primary.main">
-              גרור ושחרר קבצים כאן
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              או לחץ כדי לבחור קבצים
-            </Typography>
-          </Box>
+            <InsertDriveFile color="primary" sx={{ mr: 1 }} />
+            <Typography variant="body2" sx={{ flexGrow: 1 }}>{file.name}</Typography>
+            <IconButton onClick={() => handleFileRemove(index)} color="error">
+              <Delete />
+            </IconButton>
+          </Paper>
+        ))}
+      </Box>
 
-          {additionalFiles.length > 0 && (
-            <Box mt={2}>
-              <Typography variant="h6" color="primary.main" gutterBottom>
-                קבצים שנבחרו
-              </Typography>
-              <Box>
-                {additionalFiles.map((file, index) => (
-                  <Card key={index} sx={{ display: 'flex', alignItems: 'center', p: 1, mt: 1 }}>
-                    <InsertDriveFile color="primary" sx={{ mr: 1 }} />
-                    <Typography variant="body2" sx={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {file.name}
-                    </Typography>
-                    <IconButton onClick={() => handleFileRemove(index)} color="error">
-                      <DeleteOutline />
-                    </IconButton>
-                  </Card>
-                ))}
-              </Box>
-            </Box>
-          )}
+      {isAnalyzing && <LinearProgress sx={{ width: '100%', mt: 2 }} />}
 
-          {isAnalyzing && (
-            <Box mt={2}>
-              <LinearProgress />
-              <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                מעבד...
-              </Typography>
-            </Box>
-          )}
-
-          <Box mt={2} display="flex" justifyContent="flex-end">
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit}
-              disabled={isAnalyzing || additionalFiles.length === 0}
-              startIcon={<CloudUpload />}
-            >
-              התחל ניתוח
-            </Button>
-          </Box>
-        </CardContent>
-      </Card>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit}
+        disabled={isAnalyzing || additionalFiles.length === 0}
+      >
+        {isAnalyzing ? 'מעבד...' : 'התחל ניתוח'}
+      </Button>
 
       <Snackbar open={success} autoHideDuration={3000} onClose={() => setSuccess(false)}>
         <Alert onClose={() => setSuccess(false)} severity="success" variant="filled">

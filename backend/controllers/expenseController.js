@@ -7,12 +7,14 @@ const { InvoiceExpenseModel, SalarySlipExpenseModel, BaseExpenseModel } = requir
 const getExpenses = async (req, res) => {
 
   const { year, month } = req.query;
+  console.log(year,month);
   
   try {
       const expenses = await BaseExpenseModel.find({
           year: parseInt(year),
           month: parseInt(month)
       });
+      console.log("expenses",expenses);
       
       res.status(200).json(expenses);
   } catch (error) {
@@ -26,6 +28,7 @@ const processExpenses = async (req, res) => {
     try {
         const googleApiKey = process.env.GOOGLE_AI_API_KEY;
         const genAI = new GoogleGenerativeAI(googleApiKey);
+        console.log("hello");
 
         const generationConfig = {
             temperature: 1,
@@ -43,8 +46,31 @@ const processExpenses = async (req, res) => {
                             properties: {
                                 year: { type: "integer" },
                                 month: { type: "integer" },
-                                category: { type: "string", enum: ["Employee Salary", "Marketing", "Office Supplies", "Travel Expenses", "Utilities", "Food", "Other"] },
-                                expenseType: { type: "string", enum: ["invoice", "salarySlip"] },
+                                mainCategory: { 
+                                    type: "string", 
+                                    enum: ["costOfRevenues", "generalExpenses"] 
+                                },
+                                subCategory: { 
+                                    type: "string", 
+                                    enum: [
+                                        "salariesAndRelated",
+                                        "commissions",
+                                        "equipmentAndSoftware",
+                                        "officeExpenses",
+                                        "vehicleMaintenance",
+                                        "depreciation",
+                                        "managementServices",
+                                        "professionalServices",
+                                        "advertising",
+                                        "rentAndMaintenance",
+                                        "postageAndCommunications",
+                                        "officeAndOther"
+                                    ] 
+                                },
+                                expenseType: { 
+                                    type: "string", 
+                                    enum: ["invoice", "salarySlip"] 
+                                },
                                 invoice: {
                                     type: "object",
                                     properties: {
@@ -68,7 +94,7 @@ const processExpenses = async (req, res) => {
                                     required: ["employeeId", "employeeName", "grossSalary", "netSalary"]
                                 }
                             },
-                            required: ["year", "month", "category", "expenseType"]
+                            required: ["year", "month", "mainCategory", "subCategory", "expenseType"]
                         }
                     }
                 }
@@ -124,6 +150,9 @@ const processExpenses = async (req, res) => {
                     ...expenseData,
                     ...expenseData.invoice
                 };
+
+                console.log('iiiiiiiii', invoiceData);
+                
 
                 const newExpense = new InvoiceExpenseModel(invoiceData);
                 await newExpense.save();

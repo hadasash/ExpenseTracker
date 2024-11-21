@@ -37,25 +37,31 @@ const ExpenseManagement = () => {
     const calculateTotals = () => {
         const totalAmount = expenses.reduce((sum, expense) => sum + expense.totalAmount, 0);
 
-        const categoryTotals = expenses.reduce((acc, expense) => {
-            const category = expense.category;
-            acc[category] = (acc[category] || 0) + expense.totalAmount;
+        const mainCategoryTotals = expenses.reduce((acc, expense) => {
+            const mainCategory = expense.mainCategory;
+            acc[mainCategory] = (acc[mainCategory] || 0) + expense.totalAmount;
             return acc;
         }, {});
 
-        return { totalAmount, categoryTotals };
+        const subCategoryTotals = expenses.reduce((acc, expense) => {
+            const subCategory = expense.subCategory;
+            acc[subCategory] = (acc[subCategory] || 0) + expense.totalAmount;
+            return acc;
+        }, {});
+
+        return { totalAmount, mainCategoryTotals, subCategoryTotals };
     };
 
-    const { totalAmount, categoryTotals } = calculateTotals();
+    const { totalAmount, mainCategoryTotals, subCategoryTotals } = calculateTotals();
 
     return (
         <Container maxWidth="xl" sx={{ py: 4 }}>
             {/* Year and Month Tabs */}
-                <YearTabs
-                    selectedMonth={selectedMonth}
-                    setSelectedMonth={setSelectedMonth}
-                    setYear={setYear}
-                />
+            <YearTabs
+                selectedMonth={selectedMonth}
+                setSelectedMonth={setSelectedMonth}
+                setYear={setYear}
+            />
 
             {/* Error Message */}
             {error && (
@@ -66,7 +72,7 @@ const ExpenseManagement = () => {
 
             {/* Expense Summary, Graph, and Breakdown */}
             {expenses.length === 0 ? (
-                <Paper elevation={1} sx={{ p: 3, textAlign: 'center', mt: 3 }}>
+                <Paper elevation={0} sx={{ p: 3, textAlign: 'center', mt: 3, backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
                     <Typography variant="h6" color="textSecondary">
                         No expenses recorded for {selectedMonth}/{year}.
                     </Typography>
@@ -74,7 +80,20 @@ const ExpenseManagement = () => {
             ) : (
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>
-                        <Card elevation={3}>
+                        <Card sx={{ mb: 3,  borderRadius: '8px' }}>
+                            <CardContent>
+                                <CategoryBreakdown
+                                    selectedMonth={selectedMonth}
+                                    year={year}
+                                    expenses={expenses}
+                                    loading={loading}
+                                />
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                        <Card sx={{ mb: 3,  borderRadius: '8px' }}>
                             <CardContent>
                                 <ExpenseSummary
                                     selectedMonth={selectedMonth}
@@ -84,29 +103,16 @@ const ExpenseManagement = () => {
                                 />
                             </CardContent>
                         </Card>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <Card elevation={3}>
+
+                        <Card sx={{ mb: 3,  borderRadius: '8px' }}>
                             <CardContent>
                                 <ExpenseGraph
                                     selectedMonth={selectedMonth}
-                                    categoryTotals={categoryTotals}
+                                    mainCategoryTotals={mainCategoryTotals}
+                                    subCategoryTotals={subCategoryTotals}
                                     year={year}
                                     expenses={expenses}
                                     loading={loading}
-                                />
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Card elevation={3}>
-                            <CardContent>
-                                <CategoryBreakdown
-                                    selectedMonth={selectedMonth}
-                                    year={year}
-                                    categoryTotals={categoryTotals}
-                                    loading={loading}
-                                    expenses={expenses}
                                 />
                             </CardContent>
                         </Card>

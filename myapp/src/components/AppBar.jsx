@@ -1,37 +1,61 @@
+// // import React from 'react';
+// // import { useNavigate } from 'react-router-dom';
+
+// // const AppBar = ({ pages }) => {
+// //   const navigate = useNavigate();
+
+// //   return (
+// //     <div style={{ padding: '10px', backgroundColor: '#6200ee', color: '#fff' }}>
+// //       {pages.map((page) => (
+// //         <button 
+// //           key={page.path} 
+// //           onClick={() => navigate(page.path)} 
+// //           style={{ margin: '10px', color: '#fff', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}
+// //         >
+// //           {page.label}
+// //         </button>
+// //       ))}
+// //     </div>
+// //   );
+// // };
+
+// // export default AppBar;
 // import React from 'react';
 // import { useNavigate } from 'react-router-dom';
+// import { useTranslation } from 'react-i18next';
+// import { Box, AppBar as MuiAppBar, Toolbar, Button } from '@mui/material';
+// import LanguageSwitcher from './LanguageSwitcher'; // Adjust the import path as needed
 
-// const AppBar = ({ pages }) => {
-//   const navigate = useNavigate();
+// // const AppBar = ({ pages }) => {
+// //   const navigate = useNavigate();
+// //   const { t } = useTranslation();
 
-//   return (
-//     <div style={{ padding: '10px', backgroundColor: '#6200ee', color: '#fff' }}>
-//       {pages.map((page) => (
-//         <button 
-//           key={page.path} 
-//           onClick={() => navigate(page.path)} 
-//           style={{ margin: '10px', color: '#fff', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}
-//         >
-//           {page.label}
-//         </button>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default AppBar;
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Box, AppBar as MuiAppBar, Toolbar, Button } from '@mui/material';
-import LanguageSwitcher from './LanguageSwitcher'; // Adjust the import path as needed
-
+// //   return (
+// //     <MuiAppBar position="static">
+// //       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+// //         <Box sx={{ display: 'flex', alignItems: 'center' }}>
+// //           {pages.map((page) => (
+// //             <Button
+// //               key={page.path}
+// //               color="inherit"
+// //               onClick={() => navigate(page.path)}
+// //               sx={{ mr: 2 }}
+// //             >
+// //               {t(page.label)} {/* Use translation */}
+// //             </Button>
+// //           ))}
+// //         </Box>
+// //         <LanguageSwitcher />
+// //       </Toolbar>
+// //     </MuiAppBar>
+// //   );
+// // };
 // const AppBar = ({ pages }) => {
 //   const navigate = useNavigate();
 //   const { t } = useTranslation();
 
 //   return (
-//     <MuiAppBar position="static">
+//     <MuiAppBar position="static" sx={{ backgroundColor: '#1E40AF', color: '#FFFFFF' }}>
 //       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 //         <Box sx={{ display: 'flex', alignItems: 'center' }}>
 //           {pages.map((page) => (
@@ -39,9 +63,9 @@ import LanguageSwitcher from './LanguageSwitcher'; // Adjust the import path as 
 //               key={page.path}
 //               color="inherit"
 //               onClick={() => navigate(page.path)}
-//               sx={{ mr: 2 }}
+//               sx={{ mr: 2, fontWeight: 600 }}
 //             >
-//               {t(page.label)} {/* Use translation */}
+//               {t(page.label)}
 //             </Button>
 //           ))}
 //         </Box>
@@ -50,6 +74,14 @@ import LanguageSwitcher from './LanguageSwitcher'; // Adjust the import path as 
 //     </MuiAppBar>
 //   );
 // };
+// export default AppBar;
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Box, AppBar as MuiAppBar, Toolbar, Button } from '@mui/material';
+import LanguageSwitcher from './LanguageSwitcher';
+import logo from "../LICTSF1.png" 
+
 const AppBar = ({ pages }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -58,6 +90,13 @@ const AppBar = ({ pages }) => {
     <MuiAppBar position="static" sx={{ backgroundColor: '#1E40AF', color: '#FFFFFF' }}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {/* Logo */}
+          <img 
+            src={logo} 
+            alt="Logo" 
+            style={{ width: '58px', height: '38px', marginRight: '16px' }} 
+          />
+          {/* Navigation Buttons */}
           {pages.map((page) => (
             <Button
               key={page.path}
@@ -74,4 +113,5 @@ const AppBar = ({ pages }) => {
     </MuiAppBar>
   );
 };
+
 export default AppBar;

@@ -1,7 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Paper, Typography, Box, Skeleton, useTheme } from '@mui/material';
-import { categoryColors } from './categoriesConfig';
+
+const subCategoryColors = {
+  salariesAndRelated: '#42a5f5',
+  commissions: '#64b5f6',
+  equipmentAndSoftware: '#90caf9',
+  officeExpenses: '#bbdefb',
+  vehicleMaintenance: '#e3f2fd',
+  depreciation: '#1e88e5',
+  managementServices: '#ef5350',
+  professionalServices: '#e57373',
+  advertising: '#ef9a9a',
+  rentAndMaintenance: '#ffcdd2',
+  postageAndCommunications: '#ffebee',
+  officeAndOther: '#e53935',
+};
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
@@ -20,26 +34,45 @@ const CustomTooltip = ({ active, payload }) => {
         <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
           {data.name}
         </Typography>
-        <Typography variant="body2">
-          Amount: ${data.value.toLocaleString()}
-        </Typography>
-        <Typography variant="body2">
-          Percentage: {data.percentage}%
-        </Typography>
+        <Typography variant="body2">סכום: ₪{data.value.toLocaleString()}</Typography>
+        <Typography variant="body2">אחוז: {data.percentage}%</Typography>
       </Box>
     );
   }
   return null;
 };
 
-const ExpenseGraph = ({ categoryTotals, loading }) => {
+const ExpenseGraph = ({ expenses, loading }) => {
   const theme = useTheme();
   const [activeIndex, setActiveIndex] = useState(null);
+
+  const subCategoryData = useMemo(() => {
+    const subTotals = {};
+    let totalAmount = 0;
+
+    expenses.forEach((expense) => {
+      const subAmount = expense.totalAmount || 0;
+      totalAmount += subAmount;
+
+      // Sub category totals
+      subTotals[expense.subCategory] = (subTotals[expense.subCategory] || 0) + subAmount;
+    });
+
+    return Object.entries(subTotals)
+      .map(([category, value]) => ({
+        name: category,
+        value,
+        percentage: ((value / totalAmount) * 100).toFixed(1),
+      }))
+      .sort((a, b) => b.value - a.value);
+  }, [expenses]);
 
   if (loading) {
     return (
       <Paper elevation={3} sx={{ p: 3 }}>
-        <Typography variant="h6" gutterBottom>Expense Distribution by Category</Typography>
+        <Typography variant="h6" gutterBottom>
+          התפלגות הוצאות לפי קטגוריה
+        </Typography>
         <Box sx={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Skeleton variant="circular" width={300} height={300} />
         </Box>
@@ -47,29 +80,15 @@ const ExpenseGraph = ({ categoryTotals, loading }) => {
     );
   }
 
-  if (!categoryTotals || Object.keys(categoryTotals).length === 0) {
+  if (!expenses || expenses.length === 0) {
     return (
       <Paper elevation={3} sx={{ p: 3 }}>
         <Typography variant="h6" color="textSecondary" sx={{ textAlign: 'center' }}>
-          No expense data available for this period.
+          אין נתוני הוצאות זמינים לתקופה זו
         </Typography>
       </Paper>
     );
   }
-
-  const data = Object.entries(categoryTotals)
-    .map(([category, total]) => ({
-      name: category,
-      value: total
-    }))
-    .sort((a, b) => b.value - a.value);
-
-  const totalAmount = data.reduce((sum, entry) => sum + entry.value, 0);
-
-  const dataWithPercentages = data.map(entry => ({
-    ...entry,
-    percentage: ((entry.value / totalAmount) * 100).toFixed(1)
-  }));
 
   const onPieEnter = (_, index) => {
     setActiveIndex(index);
@@ -80,16 +99,18 @@ const ExpenseGraph = ({ categoryTotals, loading }) => {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 3 }}>
-      <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-        Expense Distribution by Category
-      </Typography>
+    <Box>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          התפלגות הוצאות לפי קטגוריה
+        </Typography>
+      </Box>
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
         <Box sx={{ flex: 1, minHeight: 400 }}>
           <ResponsiveContainer width="100%" height={400}>
             <PieChart>
               <Pie
-                data={dataWithPercentages}
+                data={subCategoryData}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
@@ -101,10 +122,10 @@ const ExpenseGraph = ({ categoryTotals, loading }) => {
                 onMouseLeave={onPieLeave}
                 animationDuration={1000}
               >
-                {dataWithPercentages.map((entry, index) => (
+                {subCategoryData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={categoryColors[entry.name] || theme.palette.primary.main}
+                    fill={subCategoryColors[entry.name] || theme.palette.primary.main}
                     stroke={theme.palette.background.paper}
                     strokeWidth={2}
                     style={{
@@ -115,12 +136,19 @@ const ExpenseGraph = ({ categoryTotals, loading }) => {
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
-              <Legend formatter={(value) => <span style={{ color: theme.palette.text.primary }}>{value}</span>} />
+              <Legend
+                formatter={(value) => (
+                  <span style={{ color: theme.palette.text.primary }}>{value}</span>
+                )}
+                layout="vertical"
+                align="right"
+                verticalAlign="middle"
+              />
             </PieChart>
           </ResponsiveContainer>
         </Box>
       </Box>
-    </Paper>
+      </Box>
   );
 };
 

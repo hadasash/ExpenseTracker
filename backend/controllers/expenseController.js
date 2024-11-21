@@ -14,11 +14,7 @@ const getExpenses = async (req, res) => {
           month: parseInt(month)
       });
       
-      if (expenses.length === 0) {
-        return res.status(404).json({ message: 'No expenses found for the specified month and year.' });
-      }
-      
-      res.json(expenses);
+      res.status(200).json(expenses);
   } catch (error) {
       res.status(500).json({ message: 'Error fetching expenses', error: error.message });
   }

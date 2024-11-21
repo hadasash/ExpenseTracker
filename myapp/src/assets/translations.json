@@ -24,6 +24,7 @@
       "previousYear": "שנה קודמת",
       "categoryDetails": {
         "categoryName": "קטגוריה לא ידועה",
+        "expenseId": "מזהה",
         "totalExpenditure": "סה״כ הוצאות",
         "expensesCount": "מספר הוצאות",
         "highestExpense": "הוצאה גבוהה ביותר",

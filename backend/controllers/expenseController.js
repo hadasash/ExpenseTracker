@@ -214,11 +214,11 @@ const saveUploadedFile = (file) => {
 };
 
 const deleteExpense = async (req, res) => {
-    const { expense_id } = req.params;
+    const { _id } = req.params;
     try {
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting expense:', error, expense_id);
+        console.error('Error deleting expense:', error, _id);
         res.status(500).json({ message: 'Error deleting expense' });
     }
 };

@@ -101,7 +101,6 @@ baseExpenseSchema.pre('save', function(next) {
   if (this.expenseType === 'invoice') {
     if (this.invoiceTotal) {
       this.totalAmount = this.invoiceTotal;
-
     } else {
       return next(new Error('Invoice total is required for invoice expense type'));
     }

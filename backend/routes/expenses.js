@@ -8,7 +8,7 @@ const upload = multer({ storage }).array('additionalFile');
 
 router.post('/processExpenses', upload, expenseController.processExpenses);
 
-router.delete('/delete_expense/:expense_id', expenseController.deleteExpense);
+router.delete('/deleteExpense/:expenseId', expenseController.deleteExpense);
 
 router.get('/expenses', expenseController.getExpenses);
 

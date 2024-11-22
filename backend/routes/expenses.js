@@ -12,4 +12,6 @@ router.delete('/deleteExpense/:expenseId', expenseController.deleteExpense);
 
 router.get('/expenses', expenseController.getExpenses);
 
+router.get('/addExpenseManually', expenseController.addExpenseManually);
+
 module.exports = router;

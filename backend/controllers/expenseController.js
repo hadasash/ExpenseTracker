@@ -252,6 +252,8 @@ const deleteExpense = async (req, res) => {
     }
 };
 
+const addExpenseManually = async (req, res) => {};
+
 const cleanCompanyName = (companyName) => {
     return companyName
         .replace(/[^\w\s\-\u0590-\u05FF]/g, '') // Remove all characters except alphanumeric, spaces, hyphens, and Hebrew letters

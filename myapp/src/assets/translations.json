@@ -45,10 +45,11 @@
           "Utilities": "חשבונות שירות",
           "food": "אוכל",
           "Other": "אחר"
-        },
-        "navbar": {
-
         }
+      },
+      "navbar": {
+          "fileUpload":"העלה הוצאה",
+          "expenseManagement": "ניהול הוצאות"
       }
     },
     "en": {
@@ -57,7 +58,7 @@
       "welcomeMessage": "Welcome",
       "expenseBreakdown": "Expense Breakdown by Category",
       "expenseManager": "Expense Manager",
-  
+    
       "total": "Total",
       "failedToFetch": "Failed to Fetch Data",
       "January": "January",
@@ -87,7 +88,6 @@
         "amount": "Amount",
         "status": "Status",
         "paid": "Paid",
-        
         "categories": {
           "Employee Salary": "Employee Salary",
           "Marketing": "Marketing",
@@ -97,7 +97,11 @@
           "food": "Food",
           "Other": "Other"
         }
-      }
+      },
+      "navbar": {
+          "fileUpload": "Upload Expenses",
+          "expenseManagement": "Manage Expenses"
+        }
     }
   }
   

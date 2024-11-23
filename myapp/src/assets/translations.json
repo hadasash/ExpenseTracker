@@ -51,7 +51,12 @@
         "postageAndCommunications": "דואר ותקשורת",
         "officeAndOther": "משרד ואחר"
       }
+    },
+    "navbar": {
+      "fileUpload": "העלאת הוצאות",
+      "expenseManagement": "ניהוך הוצאות"
     }
+
   },
   "en": {
     "homepageTitle": "Home Page",
@@ -104,6 +109,10 @@
         "postageAndCommunications": "Postage and Communications",
         "officeAndOther": "Office and Other"
       }
+    },
+    "navbar": {
+      "fileUpload": "Upload Expenses",
+      "expenseManagement": "Manage Expenses"
     }
   }
 }

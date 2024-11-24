@@ -4,23 +4,39 @@ const path = require('path');
 const fs = require('fs');
 const { InvoiceExpenseModel, SalarySlipExpenseModel, BaseExpenseModel } = require("../models/expensesModel");
 
-const getExpenses = async (req, res) => {
+// const getExpenses = async (req, res) => {
 
-  const { year, month } = req.query;
-  console.log(year,month);
-  
-  try {
-      const expenses = await BaseExpenseModel.find({
-          year: parseInt(year),
-          month: parseInt(month)
-      });
-      console.log("expenses",expenses);
-      
-      res.status(200).json(expenses);
-  } catch (error) {
-      res.status(500).json({ message: 'Error fetching expenses', error: error.message });
-  }
+//   const { year, month } = req.query;
+//   console.log(year,month);
+
+//   try {
+//       const expenses = await BaseExpenseModel.find({
+//           year: parseInt(year),
+//           month: parseInt(month)
+//       });
+//       console.log("expenses",expenses);
+
+//       res.status(200).json(expenses);
+//   } catch (error) {
+//       res.status(500).json({ message: 'Error fetching expenses', error: error.message });
+//   }
+// };
+// In expenseController.js
+getExpenses = async (req, res) => {
+    console.log("hello");
+
+    const { startDate, endDate } = req.query;
+    try {
+        const expenses = await BaseExpenseModel.find({
+            date: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        });
+        res.status(200).json(expenses);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to fetch expenses' });
+    }
 };
+
 
 const processExpenses = async (req, res) => {
     const uploadedPaths = [];
@@ -44,14 +60,13 @@ const processExpenses = async (req, res) => {
                         items: {
                             type: "object",
                             properties: {
-                                year: { type: "integer" },
-                                month: { type: "integer" },
-                                mainCategory: { 
-                                    type: "string", 
-                                    enum: ["costOfRevenues", "generalExpenses"] 
+                                date: { type: "string" },
+                                mainCategory: {
+                                    type: "string",
+                                    enum: ["costOfRevenues", "generalExpenses"]
                                 },
-                                subCategory: { 
-                                    type: "string", 
+                                subCategory: {
+                                    type: "string",
                                     enum: [
                                         "salariesAndRelated",
                                         "commissions",
@@ -65,11 +80,11 @@ const processExpenses = async (req, res) => {
                                         "rentAndMaintenance",
                                         "postageAndCommunications",
                                         "officeAndOther"
-                                    ] 
+                                    ]
                                 },
-                                expenseType: { 
-                                    type: "string", 
-                                    enum: ["invoice", "salarySlip"] 
+                                expenseType: {
+                                    type: "string",
+                                    enum: ["invoice", "salarySlip"]
                                 },
                                 invoice: {
                                     type: "object",
@@ -94,7 +109,7 @@ const processExpenses = async (req, res) => {
                                     required: ["employeeId", "employeeName", "grossSalary", "netSalary"]
                                 }
                             },
-                            required: ["year", "month", "mainCategory", "subCategory", "expenseType"]
+                            required: ["date", "mainCategory", "subCategory", "expenseType"]
                         }
                     }
                 }
@@ -116,8 +131,9 @@ const processExpenses = async (req, res) => {
             uploadedPaths.push(filePath);
         }
 
-        const prompt = "Extract key details for all expenses";
-        const generatedContent = await model.generateContent([prompt, ...imageParts]);
+        const prompt = `Extract key details for all expenses:
+       - Ensure that the date values are in the format "yyyy-mm-ddT00:00:00Z". `
+         const generatedContent = await model.generateContent([prompt, ...imageParts]);
         const summary = generatedContent.response.text();
         const parsedSummary = JSON.parse(summary);
         const expenses = parsedSummary.expenses;
@@ -215,7 +231,7 @@ const processExpenses = async (req, res) => {
                     fs.unlinkSync(filePath);
                 }
             } catch (err) {
-                console.error(`Error deleting file ${filePath}:`, err);
+                console.error(`Error deleting file ${ filePath }: `, err);
             }
         }
     }
@@ -252,7 +268,6 @@ const deleteExpense = async (req, res) => {
     }
 };
 
-const addExpenseManually = async (req, res) => {};
 
 const cleanCompanyName = (companyName) => {
     return companyName
@@ -263,15 +278,21 @@ const cleanCompanyName = (companyName) => {
 
 const createUniqueInvoiceId = (invoiceNumber, companyName) => {
     const sanitizedCompanyName = cleanCompanyName(companyName);    
-    return `${invoiceNumber}-${sanitizedCompanyName}`;
+    return `${ invoiceNumber }-${ sanitizedCompanyName } `;
 };
 
 const createUniqueSalarySlipId = (employeeId, month, year, grossSalary) => {
-    return `${employeeId}-${month}-${year}-${grossSalary}`;
+    return `${ employeeId } -${ month } -${ year } -${ grossSalary } `;
 };
+
+const addExpenseManually = async (req, res) => {
+    res.status(200).json({ message: "This endpoint is not implemented yet." });
+};
+
 
 module.exports = {
     processExpenses,
+    addExpenseManually,
     deleteExpense,
     getExpenses,
 };

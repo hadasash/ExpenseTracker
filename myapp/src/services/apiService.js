@@ -3,11 +3,13 @@ import axios from 'axios';
 const API_BASE_URL = 'http://localhost:3000';
 
 export const apiService = {
-  async getExpensesByMonth(year, month) {
+  async getExpensesByDateRange(startDate, endDate) {
+    console.log("extttttes");
+
     try {
       const response = await axios.get(`${API_BASE_URL}/expenses/expenses`, {
-        params: { year, month }
-      });
+        params: { startDate, endDate },
+    });
       return response.data;
     } catch (error) {
       console.error('Error fetching expenses:', error);

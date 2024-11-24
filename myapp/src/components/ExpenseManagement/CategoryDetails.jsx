@@ -110,56 +110,8 @@ const CategoryDetailsPage = () => {
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: 'background.default', minHeight: '100vh' }} dir="rtl">
       {/* Header Card */}
-      <Card
-        elevation={0}
-        sx={{
-          mb: 4,
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-          borderRadius: 3,
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        <CardContent sx={{ p: { xs: 2, md: 4 } }}>
-          <Stack
-            direction={isMobile ? 'column' : 'row'}
-            justifyContent="space-between"
-            alignItems={isMobile ? 'flex-start' : 'center'}
-            spacing={2}
-          >
-            <Box>
-              <Typography
-                variant={isMobile ? 'h5' : 'h4'}
-                fontWeight="700"
-                color="white"
-                gutterBottom
-              >
-                {t(mainCategory)}
-              </Typography>
-              {subCategory && (
-                <Chip
-                  icon={<CategoryIcon sx={{ color: 'white !important' }} />}
-                  label={t(subCategory)}
-                  sx={{
-                    bgcolor: 'rgba(255, 255, 255, 0.1)',
-                    color: 'white',
-                    '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.2)' },
-                  }}
-                />
-              )}
-            </Box>
-            <Chip
-              icon={<CalendarIcon sx={{ color: 'white !important' }} />}
-              label={`${hebrewMonth} ${year}`}
-              sx={{
-                bgcolor: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.2)' },
-              }}
-            />
-          </Stack>
-        </CardContent>
-      </Card>
+
+
 
       {/* Stats Grid */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -242,8 +194,9 @@ const CategoryDetailsPage = () => {
                     },
                   }}
                 >
+                  {/* תצוגת התאריך */}
                   <TableCell align="right">
-                    {new Date(expense.createdAt).toLocaleDateString('he-IL')}
+                 
                   </TableCell>
                   <TableCell align="right">
                     <Chip
@@ -282,6 +235,7 @@ const CategoryDetailsPage = () => {
                 </TableRow>
               ))}
             </TableBody>
+
           </Table>
         </TableContainer>
       </Card>

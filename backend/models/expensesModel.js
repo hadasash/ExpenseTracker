@@ -178,17 +178,22 @@ const getMainCategoryForSubcategory = (subCategory) => {
 };
 
 const baseExpenseSchema = new mongoose.Schema({
-  year: {
-    type: Number,
+  // year: {
+  //   type: Number,
+  //   required: true,
+  //   description: 'The year the expense was issued'
+  // },
+  // month: {
+  //   type: Number,
+  //   required: true,
+  //   min: 1,
+  //   max: 12,
+  //   description: 'The month the expense was issued (1-12)'
+  // },
+  date: {
+    type: Date,
     required: true,
-    description: 'The year the expense was issued'
-  },
-  month: {
-    type: Number,
-    required: true,
-    min: 1,
-    max: 12,
-    description: 'The month the expense was issued (1-12)'
+    description: 'The date the expense was issued'
   },
   totalAmount: {
     type: Number,

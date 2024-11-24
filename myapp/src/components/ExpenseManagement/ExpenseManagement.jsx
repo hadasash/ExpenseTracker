@@ -16,23 +16,41 @@ const ExpenseManagement = () => {
 
     useEffect(() => {
         const fetchExpenses = async () => {
-            if (!selectedMonth) return;
-
+            if (!selectedMonth || selectedMonth < 1 || selectedMonth > 12) {
+                console.error("Invalid selectedMonth:", selectedMonth);
+                return;
+            }
+    
+            if (!year || year < 1900 || year > new Date().getFullYear()) {
+                console.error("Invalid year:", year);
+                return;
+            }
+    
+            const startDate = new Date(year, selectedMonth - 1, 1).toISOString();
+            const endDate = new Date(year, selectedMonth, 0).toISOString();
+    
+            console.log("Fetching expenses with range:", startDate, endDate);
+    
             setLoading(true);
             try {
-                const data = await apiService.getExpensesByMonth(year, selectedMonth);
-                setExpenses(data);
-                setError(null);
+                const data = await apiService.getExpensesByDateRange(startDate, endDate);
+                console.log('Fetched expenses:', data);
+                if (Array.isArray(data)) {
+                    setExpenses(data);
+                    setError(null);
+                }
             } catch (err) {
-                setError('Failed to fetch expense data');
+                setError("Failed to fetch expense data");
                 console.error(err);
             } finally {
                 setLoading(false);
             }
         };
-
+    
         fetchExpenses();
     }, [selectedMonth, year]);
+    
+      
 
     const calculateTotals = () => {
         const totalAmount = expenses.reduce((sum, expense) => sum + expense.totalAmount, 0);

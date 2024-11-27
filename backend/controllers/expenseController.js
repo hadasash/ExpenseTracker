@@ -280,7 +280,8 @@ const createUniqueInvoiceId = (invoiceNumber, providerName) => {
 };
 
 const createUniqueSalarySlipId = (employeeId, date, grossSalary) => {
-    return `${ employeeId }-${ date }-${ grossSalary }`;
+    const formattedDate = date.slice(0, 7); // Extracts "yyyy-mm"
+    return `${employeeId}-${formattedDate}-${grossSalary}`;
 };
 
 const addExpenseManually = async (req, res) => {

@@ -166,7 +166,7 @@ const CategoryDetailsPage = () => {
         <Grid item xs={12} md={6}>
           <StatCard
             icon={WalletIcon}
-            title="סך הכל הוצאות"
+            title={t('categoryDetails.totalExpenditure')}
             value={`₪${totalSum.toLocaleString()}`}
             subtitle={`${hebrewMonth} ${year}`}
           />
@@ -174,9 +174,8 @@ const CategoryDetailsPage = () => {
         <Grid item xs={12} md={6}>
           <StatCard
             icon={ReceiptIcon}
-            title="מספר חשבוניות"
+            title={t('categoryDetails.expensesCount')}
             value={expenses.length}
-            subtitle="סך הכל חשבוניות לתקופה זו"
           />
         </Grid>
       </Grid>

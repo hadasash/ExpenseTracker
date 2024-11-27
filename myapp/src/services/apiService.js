@@ -4,7 +4,6 @@ const API_BASE_URL = 'http://localhost:3000';
 
 export const apiService = {
   async getExpensesByDateRange(startDate, endDate) {
-    console.log("extttttes");
 
     try {
       const response = await axios.get(`${API_BASE_URL}/expenses/expenses`, {

@@ -10,14 +10,11 @@ const ExpenseSummary = ({ selectedMonth, totalAmount, year }) => {
     <>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <Typography variant="h6" color="textSecondary">
-        {t('monthlySummary')}- {selectedMonth}/{year}
+        {t('monthlySummaryTitle')} - {selectedMonth}/{year}
         </Typography>
       </Box>
       <Typography variant="h4" sx={{ fontWeight: 'bold',  }}>
         ₪{formattedAmount}
-      </Typography>
-      <Typography variant="body1" color="textSecondary">
-        {t('monthlySummaryTitle')}
       </Typography>
     </>
   );

@@ -66,7 +66,7 @@ const CategoryBreakdown = ({ selectedMonth, year, expenses, loading }) => {
   return (
     <Box>
       <Typography variant="h6" sx={{ mb: 3 }}>
-        {t('expenseBreakdown')} - {t(selectedMonth)} {year}
+        {t('expenseBreakdown')} - {t(selectedMonth)}/{year}
       </Typography>
 
       {/* Main Categories */}

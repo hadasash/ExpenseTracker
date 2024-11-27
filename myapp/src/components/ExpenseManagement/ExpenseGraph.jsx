@@ -262,7 +262,7 @@ const ExpenseGraph = ({ expenses, loading }) => {
     <Box>
       <Box sx={{ mb: 3 }}>
         <Typography variant="h6" gutterBottom>
-          {t('title')}
+          {t('graphTitle')}
         </Typography>
       </Box>
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>

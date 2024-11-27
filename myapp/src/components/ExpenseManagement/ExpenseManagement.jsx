@@ -6,6 +6,7 @@ import ExpenseGraph from './ExpenseGraph';
 import CategoryBreakdown from './CategoryBreakdown';
 import ActionButtons from './ActionButtons';
 import { apiService } from '../../services/apiService';
+import { useTranslation } from 'react-i18next';
 
 const ExpenseManagement = () => {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
@@ -13,6 +14,7 @@ const ExpenseManagement = () => {
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const fetchExpenses = async () => {
@@ -92,7 +94,7 @@ const ExpenseManagement = () => {
             {expenses.length === 0 ? (
                 <Paper elevation={0} sx={{ p: 3, textAlign: 'center', mt: 3, backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
                     <Typography variant="h6" color="textSecondary">
-                        No expenses recorded for {selectedMonth}/{year}
+                        {t('No expenses recorded for')} {selectedMonth}/{year}
                     </Typography>
                 </Paper>
             ) : (

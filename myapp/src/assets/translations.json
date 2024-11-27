@@ -35,6 +35,8 @@
       "amount": "סכום",
       "status": "סטטוס",
       "paid": "שולם",
+      "expenseType": "סוג הוצאה",
+      "expenseId": "קוד זיהוי הוצאה",
       "categories": {
         "costOfRevenues": "עלות הכנסות",
         "generalExpenses": "הוצאות כלליות",

@@ -307,6 +307,7 @@ const addExpenseManually = async (req, res) => {
             invoiceNumber: finalInvoiceNumber,
             invoiceTotal: invoiceTotal,
             invoiceId: uniqueInvoiceId,
+            currency: 'ILS',
             expenseType: 'invoice',
         };        
 

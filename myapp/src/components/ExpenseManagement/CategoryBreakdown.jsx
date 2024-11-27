@@ -1,18 +1,26 @@
 import React from 'react';
-import { Typography, Box, Paper } from '@mui/material';
+import { Typography, Box, Paper, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 const mainCategoryColors = {
-  costOfRevenues: '#f44336', // Red
-  generalExpenses: '#2196f3', // Blue
+  costOfRevenues: '#FFEBEE', // Light Red
+  generalExpenses: '#E3F2FD', // Light Blue
+};
+
+const textColors = {
+  costOfRevenues: '#D32F2F', // Darker Red
+  generalExpenses: '#1976D2', // Darker Blue
 };
 
 const CategoryBreakdown = ({ selectedMonth, year, expenses, loading }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
+  const [expandedCategories, setExpandedCategories] = React.useState([]);
 
   const calculateTotals = () => {
     const totals = {
@@ -21,7 +29,7 @@ const CategoryBreakdown = ({ selectedMonth, year, expenses, loading }) => {
     };
 
     expenses.forEach((expense) => {
-      const { mainCategory, subCategory, totalAmount } = expense;
+      const { mainCategory, subCategory, totalAmount } = expense;      
 
       totals.mainCategories[mainCategory] =
         (totals.mainCategories[mainCategory] || 0) + totalAmount;
@@ -36,9 +44,10 @@ const CategoryBreakdown = ({ selectedMonth, year, expenses, loading }) => {
   const { mainCategories, subCategories } = calculateTotals();
 
   const handleCategoryClick = (mainCategory, subCategory = null) => {
-    const filteredExpenses = expenses.filter((expense) =>
-      expense.mainCategory === mainCategory &&
-      (!subCategory || expense.subCategory === subCategory)
+    const filteredExpenses = expenses.filter(
+      (expense) =>
+        expense.mainCategory === mainCategory &&
+        (!subCategory || expense.subCategory === subCategory)
     );
 
     navigate(`/${year}/${selectedMonth}/details`, {
@@ -48,6 +57,14 @@ const CategoryBreakdown = ({ selectedMonth, year, expenses, loading }) => {
         expenses: filteredExpenses,
       },
     });
+  };
+
+  const toggleCategory = (mainCategory) => {
+    setExpandedCategories((prev) =>
+      prev.includes(mainCategory)
+        ? prev.filter((category) => category !== mainCategory)
+        : [...prev, mainCategory]
+    );
   };
 
   if (loading) {
@@ -65,74 +82,90 @@ const CategoryBreakdown = ({ selectedMonth, year, expenses, loading }) => {
 
   return (
     <Box>
-      <Typography variant="h6" sx={{ mb: 3 }}>
+      <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold' }}>
         {t('expenseBreakdown')} - {t(selectedMonth)}/{year}
       </Typography>
 
-      {/* Main Categories */}
       {Object.entries(mainCategories).map(([mainCategory, amount]) => (
         <Box key={mainCategory} sx={{ mb: 3 }}>
           <Paper
-            elevation={1}
+            elevation={2}
             sx={{
-              p: 2,
+              p: 3,
+              borderRadius: 3,
+              backgroundColor: mainCategoryColors[mainCategory],
               cursor: 'pointer',
-              borderRadius: 2,
-              borderLeft: `4px solid ${mainCategoryColors[mainCategory]}`,
-              backgroundColor: theme.palette.background.paper,
-              '&:hover': {
-                backgroundColor: theme.palette.action.hover,
-              },
+              '&:hover': { boxShadow: theme.shadows[4] },
             }}
-            onClick={() => handleCategoryClick(mainCategory)}
+            onClick={() => toggleCategory(mainCategory)}
           >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="h6" sx={{ fontWeight: 500 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 {t(`categoryDetails.categories.${mainCategory}`)}
               </Typography>
-              <Typography
-                sx={{
-                  color: mainCategoryColors[mainCategory], 
-                }}
-              >
+              <Typography variant="h6" sx={{ color: textColors[mainCategory] }}>
                 ₪{amount.toLocaleString()}
               </Typography>
-
+              <IconButton>
+                {expandedCategories.includes(mainCategory) ? (
+                  <ExpandLessIcon sx={{ color: textColors[mainCategory] }} />
+                ) : (
+                  <ExpandMoreIcon sx={{ color: textColors[mainCategory] }} />
+                )}
+              </IconButton>
             </Box>
           </Paper>
 
-          {/* Subcategories */}
-          <Box sx={{ pl: 2 }}>
-            {Object.entries(subCategories)
-              .filter(([subCategory]) => {
-                const expense = expenses.find((e) => e.subCategory === subCategory);
-                return expense?.mainCategory === mainCategory;
-              })
-              .map(([subCategory, subAmount]) => (
-                <Paper
-                  key={subCategory}
-                  elevation={0}
-                  sx={{
-                    mb: 2,
-                    p: 2,
-                    cursor: 'pointer',
-                    borderRadius: 2,
-                    backgroundColor: theme.palette.background.default,
-                    '&:hover': {
-                      backgroundColor: theme.palette.action.hover,
-                    },
-                  }}
-                  onClick={() => handleCategoryClick(mainCategory, subCategory)}
-                >
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body1">{t(`categoryDetails.categories.${subCategory}`)}</Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      ₪{subAmount.toLocaleString()}
-                    </Typography>
-                  </Box>
-                </Paper>
-              ))}
-          </Box>
+          {expandedCategories.includes(mainCategory) && (
+            <Box sx={{ pl: 3, mt: 2 }}>
+              {Object.entries(subCategories)
+                .filter(([subCategory]) => {
+                  const expense = expenses.find(
+                    (e) => e.subCategory === subCategory
+                  );
+                  return expense?.mainCategory === mainCategory;
+                })
+                .map(([subCategory, subAmount]) => (
+                  <Paper
+                    key={subCategory}
+                    elevation={1}
+                    sx={{
+                      mb: 2,
+                      p: 2,
+                      borderRadius: 2,
+                      backgroundColor: theme.palette.background.paper,
+                      '&:hover': {
+                        backgroundColor: theme.palette.action.hover,
+                      },
+                    }}
+                    onClick={() =>
+                      handleCategoryClick(mainCategory, subCategory)
+                    }
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Typography variant="body1">
+                        {t(`categoryDetails.categories.${subCategory}`)}
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                        ₪{subAmount.toLocaleString()}
+                      </Typography>
+                    </Box>
+                  </Paper>
+                ))}
+            </Box>
+          )}
         </Box>
       ))}
     </Box>

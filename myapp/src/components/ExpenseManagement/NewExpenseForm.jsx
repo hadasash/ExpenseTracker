@@ -98,8 +98,6 @@ const ManualExpenseForm = () => {
   
       console.log('Server Response:', response);
       setSuccess(true);
-      setExpenses((prev) => [...prev, response]);
-
     } catch (err) {
       console.error('Error adding expense', err);
       alert('Failed to add the expense. Please try again.');

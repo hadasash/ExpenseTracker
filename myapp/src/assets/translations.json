@@ -59,7 +59,10 @@
       "expenseManagement": "ניהול הוצאות"
     },
     "monthlySummaryTitle": "סיכום הוצאות חודשי",
-    "NoExpensesRecordedFor": "אין הוצאות עבור"
+    "NoExpensesRecordedFor": "אין הוצאות עבור",
+    "exportMonthlyReport": "יצוא דוח חודשי",
+    "addNewExpense": "הוספת הוצאה חדשה",
+    "addExpense": "הוספת הוצאה"
   },
   "en": {
     "homepageTitle": "Home Page",
@@ -119,6 +122,9 @@
     },
     "monthlySummaryTitle": "Monthly Expense Summary",
     "graphTitle":"Expense Distribution by Subcategory",
-    "NoExpensesRecordedFor": "No expenses recorded for"
+    "NoExpensesRecordedFor": "No expenses recorded for",
+    "exportMonthlyReport": "Export Monthly Report",
+    "addNewExpense": "Add New Expense",
+    "addExpense": "Add Expense"
   }
 }

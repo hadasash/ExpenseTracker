@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Button, Box, Modal, Typography, Paper } from '@mui/material';
+import { Button, Box, Modal, Typography } from '@mui/material';
 import NewExpenseForm from './NewExpenseForm';
+import { useTranslation } from 'react-i18next';
 
 const ActionButtons = () => {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -27,9 +29,8 @@ const ActionButtons = () => {
           },
         }}
       >
-        הוספת הוצאה
+        {t('addExpense')}      
       </Button>
-
       {/* כפתור יצוא דוח חודשי */}
       <Button
         variant="outlined"
@@ -46,10 +47,9 @@ const ActionButtons = () => {
           },
         }}
       >
-        יצוא דוח חודשי
+        {t('exportMonthlyReport')}
       </Button>
 
-      {/* Modal עבור טופס הוצאה חדשה */}
       <Modal open={open} onClose={handleClose}>
         <Box
           sx={{
@@ -64,7 +64,7 @@ const ActionButtons = () => {
           }}
         >
           <Typography variant="h6" component="h2" sx={{ marginBottom: 2 }}>
-            הוספת הוצאה חדשה
+            {t('AddNewExpense')}          
           </Typography>
           <NewExpenseForm onClose={handleClose} />
         </Box>

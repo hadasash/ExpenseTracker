@@ -57,8 +57,9 @@
     "navbar": {
       "fileUpload": "העלאת הוצאות",
       "expenseManagement": "ניהול הוצאות"
-    }
-
+    },
+    "monthlySummary": "סיכום חודשי",
+    "monthlySummaryTitle": "סיכום הוצאות חודשי"
   },
   "en": {
     "homepageTitle": "Home Page",
@@ -115,6 +116,8 @@
     "navbar": {
       "fileUpload": "Upload Expenses",
       "expenseManagement": "Manage Expenses"
-    }
+    },
+    "monthlySummary": "Monthly Summary",
+    "monthlySummaryTitle": "Monthly Expense Summary"
   }
 }

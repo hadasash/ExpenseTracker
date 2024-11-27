@@ -291,8 +291,6 @@ baseExpenseSchema.pre('validate', function(next) {
 });
 
 baseExpenseSchema.pre('save', function(next) {
-  console.log('Pre save hook for BaseExpenseModel', this);
-
   if (this.expenseType === 'invoice') {
     if (this.invoiceTotal) {
       this.totalAmount = this.invoiceTotal;

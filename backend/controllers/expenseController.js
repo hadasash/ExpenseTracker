@@ -129,9 +129,12 @@ const processExpenses = async (req, res) => {
             uploadedPaths.push(filePath);
         }
 
-        const prompt = `Extract key details for all expenses:
-       - Ensure that the date values are in the format "yyyy-mm-ddT00:00:00Z". When no day provided, use the first day of the month.`
-         const generatedContent = await model.generateContent([prompt, ...imageParts]);
+        const prompt = `
+            Extract key details for all expenses:
+            - Ensure that the date values are in the format "yyyy-mm-ddT00:00:00Z". When no day is provided, use the first day of the month.
+            - Ensure all currency values are returned using ISO currency codes (e.g., use "USD" instead of "$", "ILS" instead of "₪").
+            `;
+        const generatedContent = await model.generateContent([prompt, ...imageParts]);
         const summary = generatedContent.response.text();
         const parsedSummary = JSON.parse(summary);
         const expenses = parsedSummary.expenses;

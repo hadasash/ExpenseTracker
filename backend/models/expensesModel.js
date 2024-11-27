@@ -214,7 +214,6 @@ const baseExpenseSchema = new mongoose.Schema({
   expenseType: {
     type: String,
     enum: ['invoice', 'salarySlip'],
-    required: true,
     description: 'Type of expense document'
   },
   createdAt: {
@@ -240,7 +239,6 @@ const invoiceSpecificFields = new mongoose.Schema({
   },
   invoiceNumber: {
     type: Number,
-    required: true,
     description: 'Invoice number'
   },
   invoiceTotal: {

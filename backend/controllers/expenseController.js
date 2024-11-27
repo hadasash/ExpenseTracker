@@ -276,7 +276,7 @@ const cleanProviderName = (providerName) => {
 
 const createUniqueInvoiceId = (invoiceNumber, providerName) => {
     const sanitizedProviderName = cleanProviderName(providerName);    
-    return `${ invoiceNumber }-${ sanitizedProviderName }`;
+    return `${invoiceNumber}-${sanitizedProviderName}`;
 };
 
 const createUniqueSalarySlipId = (employeeId, date, grossSalary) => {
@@ -285,9 +285,40 @@ const createUniqueSalarySlipId = (employeeId, date, grossSalary) => {
 };
 
 const addExpenseManually = async (req, res) => {
- 
-}
+    try {
+        const { date, category, subCategory, providerName, invoiceTotal, invoiceNumber } = req.body;
 
+        if (!date || !category || !subCategory || !providerName || invoiceTotal <= 0) {
+            return res.status(400).json({ message: 'Missing or invalid required fields' });
+        }
+
+        const formattedDate = new Date(date);
+        const finalInvoiceNumber = invoiceNumber || '000';
+
+        const uniqueInvoiceId = createUniqueInvoiceId(finalInvoiceNumber, providerName); //000-ABC
+        
+        // TODO: Check if the invoice already exists - HOW?
+
+        const expenseData = {
+            date: formattedDate,
+            mainCategory: category,
+            subCategory: subCategory,
+            providerName: providerName,
+            invoiceNumber: finalInvoiceNumber,
+            invoiceTotal: invoiceTotal,
+            invoiceId: uniqueInvoiceId,
+            expenseType: 'invoice',
+        };        
+
+        const newExpense = new InvoiceExpenseModel(expenseData);
+        await newExpense.save();
+
+        res.status(201).json({ message: 'Expense added successfully', expense: newExpense });
+    } catch (error) {
+        console.error('Error adding expense manually:', error);
+        res.status(500).json({ message: 'Failed to add the expense', error: error.message });
+    }
+};
 
 module.exports = {
     processExpenses,

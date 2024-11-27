@@ -1,20 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Box,
   TextField,
   Button,
   Grid,
-  Typography,
   FormControl,
   Select,
   InputLabel,
   MenuItem,
   FormControlLabel,
   Checkbox,
-  Divider,
 } from '@mui/material';
+import { apiService } from '../../services/apiService';
 
-const InvoiceExpenseForm = () => {
+const ManualExpenseForm = () => {
   const categorySubcategoryMap = {
     costOfRevenues: [
       { label: 'Salaries and Related', value: 'salariesAndRelated' },
@@ -34,9 +33,9 @@ const InvoiceExpenseForm = () => {
     ],
   };
 
+  const [success, setSuccess] = useState(false);
   const [formValues, setFormValues] = useState({
-    year: new Date().getFullYear(),
-    month: new Date().getMonth() + 1,
+    date: new Date().toISOString().split('T')[0],
     category: '',
     subCategory: '',
     invoiceNumber: '',
@@ -46,10 +45,18 @@ const InvoiceExpenseForm = () => {
 
   const [noInvoiceNumber, setNoInvoiceNumber] = useState(false);
 
+  const containerRef = useRef(null);
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    if (containerRef.current && bottomRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  }, []);
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
-    // Prevent negative values for invoiceTotal
     if (name === 'invoiceTotal' && value < 0) {
       return;
     }
@@ -61,28 +68,43 @@ const InvoiceExpenseForm = () => {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // Additional validation before submission
+  
     if (formValues.invoiceTotal <= 0) {
       alert('Invoice Total must be greater than zero.');
       return;
     }
-
-    // Set invoice number to '000' if no invoice number is provided
+  
     const finalInvoiceNumber = noInvoiceNumber ? '000' : formValues.invoiceNumber;
-
+  
     if (!finalInvoiceNumber && !noInvoiceNumber) {
       alert('Invoice Number is required unless "No Invoice Number" is checked.');
       return;
     }
-
-    console.log('Form Submitted:', {
+  
+    const formattedDate = `${formValues.date}T00:00:00Z`;
+  
+    const payload = {
       ...formValues,
+      date: formattedDate,
       invoiceNumber: finalInvoiceNumber,
-    });
-  };
+    };
+  
+    setSuccess(false);
+  
+    try {
+      const response = await apiService.addExpenseManually(payload);
+  
+      console.log('Server Response:', response);
+      setSuccess(true);
+      setExpenses((prev) => [...prev, response]);
+
+    } catch (err) {
+      console.error('Error adding expense', err);
+      alert('Failed to add the expense. Please try again.');
+    }
+  };  
 
   const availableSubcategories =
     categorySubcategoryMap[formValues.category] || [];
@@ -101,40 +123,27 @@ const InvoiceExpenseForm = () => {
         flexDirection: 'column',
       }}
     >
-      <Typography variant="h5" mb={2}>
-        Add New Invoice Expense
-      </Typography>
       <Box
+        ref={containerRef}
         sx={{
           flexGrow: 1,
           overflowY: 'auto',
+          maxHeight: 'calc(100vh - 150px)',
           padding: '10px',
-          marginBottom: '8px',
         }}
       >
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <TextField
-                label="Year"
-                name="year"
-                type="number"
+                label="Date"
+                name="date"
+                type="date"
                 fullWidth
-                value={formValues.year}
+                value={formValues.date}
                 onChange={handleInputChange}
                 required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                label="Month"
-                name="month"
-                type="number"
-                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                fullWidth
-                value={formValues.month}
-                onChange={handleInputChange}
-                required
+                InputLabel={{ shrink: true }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -213,13 +222,8 @@ const InvoiceExpenseForm = () => {
               />
             </Grid>
           </Grid>
-          {/* Centered Button */}
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-            >
+          <Box ref={bottomRef} sx={{ display: 'flex', justifyContent: 'center', marginTop: 1 }}>
+            <Button type="submit" variant="contained" color="primary">
               Add Expense
             </Button>
           </Box>
@@ -229,4 +233,4 @@ const InvoiceExpenseForm = () => {
   );
 };
 
-export default InvoiceExpenseForm;
+export default ManualExpenseForm;

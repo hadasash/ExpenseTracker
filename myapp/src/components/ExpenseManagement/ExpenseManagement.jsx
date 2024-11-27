@@ -92,7 +92,7 @@ const ExpenseManagement = () => {
             {expenses.length === 0 ? (
                 <Paper elevation={0} sx={{ p: 3, textAlign: 'center', mt: 3, backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
                     <Typography variant="h6" color="textSecondary">
-                        No expenses recorded for {selectedMonth}/{year}.
+                        No expenses recorded for {selectedMonth}/{year}
                     </Typography>
                 </Paper>
             ) : (

@@ -221,7 +221,15 @@ const baseExpenseSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
     description: 'Timestamp for when the record was created'
-  }
+  },
+  providerName: {
+    type: String,
+    description: 'Name of the business or service provider'
+  },
+  currency: {
+    type: String,
+    description: 'Currency of the expense'
+  },
 });
 
 const invoiceSpecificFields = new mongoose.Schema({
@@ -235,11 +243,6 @@ const invoiceSpecificFields = new mongoose.Schema({
     required: true,
     description: 'Invoice number'
   },
-  providerName: {
-    type: String,
-    required: true,
-    description: 'Name of the business or service provider'
-  },
   invoiceTotal: {
     type: Number,
     description: 'The total amount of the invoice'
@@ -249,7 +252,7 @@ const invoiceSpecificFields = new mongoose.Schema({
 const salarySlipSpecificFields = new mongoose.Schema({
   salarySlipId: {
     type: String,
-    description: 'Unique identifier for the salary slip composed by employee id, company name, month and year',
+    description: 'Unique id composed by employee id, company name, month and year',
   },
   employeeId: {
     type: String,
@@ -270,10 +273,6 @@ const salarySlipSpecificFields = new mongoose.Schema({
   netSalary: {
     type: Number,
     description: 'Net salary amount after deductions'
-  },
-  companyName: {
-    type: String,
-    description: 'Name of the company'
   },
 });
 

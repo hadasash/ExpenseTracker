@@ -22,9 +22,7 @@ const { InvoiceExpenseModel, SalarySlipExpenseModel, BaseExpenseModel } = requir
 //   }
 // };
 // In expenseController.js
-getExpenses = async (req, res) => {
-    console.log("hello");
-
+const getExpenses = async (req, res) => {
     const { startDate, endDate } = req.query;
     try {
         const expenses = await BaseExpenseModel.find({
@@ -86,15 +84,16 @@ const processExpenses = async (req, res) => {
                                     type: "string",
                                     enum: ["invoice", "salarySlip"]
                                 },
+                                providerName: { type: "string" },
+                                currency: { type: "string" },
                                 invoice: {
                                     type: "object",
                                     properties: {
                                         invoiceId: { type: "string" },
                                         invoiceNumber: { type: "number" },
-                                        providerName: { type: "string" },
                                         invoiceTotal: { type: "number" },
                                     },
-                                    required: ["invoiceNumber", "providerName"]
+                                    required: ["invoiceNumber"]
                                 },
                                 salarySlip: {
                                     type: "object",
@@ -104,12 +103,11 @@ const processExpenses = async (req, res) => {
                                         employeeNumber: { type: "integer" },
                                         grossSalary: { type: "number" },
                                         netSalary: { type: "number" },
-                                        companyName: { type: "string" },
                                     },
                                     required: ["employeeId", "employeeName", "grossSalary", "netSalary"]
                                 }
                             },
-                            required: ["date", "mainCategory", "subCategory", "expenseType"]
+                            required: ["date", "mainCategory", "subCategory", "expenseType", "providerName"]
                         }
                     }
                 }
@@ -132,7 +130,7 @@ const processExpenses = async (req, res) => {
         }
 
         const prompt = `Extract key details for all expenses:
-       - Ensure that the date values are in the format "yyyy-mm-ddT00:00:00Z". `
+       - Ensure that the date values are in the format "yyyy-mm-ddT00:00:00Z". When no day provided, use the first day of the month.`
          const generatedContent = await model.generateContent([prompt, ...imageParts]);
         const summary = generatedContent.response.text();
         const parsedSummary = JSON.parse(summary);
@@ -146,13 +144,13 @@ const processExpenses = async (req, res) => {
 
         for (const expenseData of expenses) {
             if (expenseData.expenseType === 'invoice') {
-                if (!expenseData.invoice || !expenseData.invoice.invoiceNumber || !expenseData.invoice.providerName) {
+                if (!expenseData.invoice || !expenseData.invoice.invoiceNumber || !expenseData.providerName) {
                     return res.status(400).json({ message: "Missing required invoice fields" });
                 }
 
                 const uniqueInvoiceId = createUniqueInvoiceId(
                     expenseData.invoice.invoiceNumber, 
-                    expenseData.invoice.providerName,
+                    expenseData.providerName,
                 );
 
                 expenseData.invoice.invoiceId = uniqueInvoiceId;
@@ -165,10 +163,7 @@ const processExpenses = async (req, res) => {
                 const invoiceData = {
                     ...expenseData,
                     ...expenseData.invoice
-                };
-
-                console.log('iiiiiiiii', invoiceData);
-                
+                };                
 
                 const newExpense = new InvoiceExpenseModel(invoiceData);
                 await newExpense.save();
@@ -181,8 +176,7 @@ const processExpenses = async (req, res) => {
 
                 const uniqueSalarySlipId = createUniqueSalarySlipId(
                     expenseData.salarySlip.employeeId, 
-                    expenseData.year,
-                    expenseData.month,
+                    expenseData.date,
                     expenseData.salarySlip.grossSalary,
                 );                
 
@@ -269,25 +263,26 @@ const deleteExpense = async (req, res) => {
 };
 
 
-const cleanCompanyName = (companyName) => {
-    return companyName
-        .replace(/[^\w\s\-\u0590-\u05FF]/g, '') // Remove all characters except alphanumeric, spaces, hyphens, and Hebrew letters
-        .replace(/\./g, '-')   // Replace periods with hyphens
-        .toLowerCase();        // Optional: Convert to lowercase for consistency
+const cleanProviderName = (providerName) => {
+    return providerName
+        .replace(/[^\w\s\-\u0590-\u05FF]/g, '') // Removes special characters
+        .replace(/\s+/g, '-')  // Replaces spaces with hyphens
+        .replace(/\./g, '-')   // Replaces periods with hyphens
+        .toLowerCase();        // Converts to lowercase
 };
 
-const createUniqueInvoiceId = (invoiceNumber, companyName) => {
-    const sanitizedCompanyName = cleanCompanyName(companyName);    
-    return `${ invoiceNumber }-${ sanitizedCompanyName } `;
+const createUniqueInvoiceId = (invoiceNumber, providerName) => {
+    const sanitizedProviderName = cleanProviderName(providerName);    
+    return `${ invoiceNumber }-${ sanitizedProviderName }`;
 };
 
-const createUniqueSalarySlipId = (employeeId, month, year, grossSalary) => {
-    return `${ employeeId } -${ month } -${ year } -${ grossSalary } `;
+const createUniqueSalarySlipId = (employeeId, date, grossSalary) => {
+    return `${ employeeId }-${ date }-${ grossSalary }`;
 };
 
 const addExpenseManually = async (req, res) => {
-    res.status(200).json({ message: "This endpoint is not implemented yet." });
-};
+ 
+}
 
 
 module.exports = {

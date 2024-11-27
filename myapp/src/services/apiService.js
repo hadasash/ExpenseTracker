@@ -37,5 +37,17 @@ export const apiService = {
       console.error('Error deleting expense:', error);
       throw error;
     }
-  }
+  },
+
+  async addExpenseManually(payload) {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/expenses/addExpenseManually`, payload, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error adding expense:', error);
+      throw error;
+    }
+  },
 };

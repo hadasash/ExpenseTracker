@@ -262,9 +262,9 @@ const CategoryDetailsPage = () => {
                     />
                   </TableCell>
                   <TableCell align="right" sx={{ fontWeight: 500 }}>
-                    {expense.expenseType === 'invoice'
+                    {expense.providerName
                       ? expense.providerName
-                      : expense.employeeName || t('categoryDetails.unknown')}
+                      : expense.employeeName || t('categoryDetails.unknown')}                  
                   </TableCell>
                   <TableCell align="right" sx={{ color: 'text.secondary' }}>
                     {expense.expenseType === 'invoice'

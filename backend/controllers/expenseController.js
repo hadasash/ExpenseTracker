@@ -2,26 +2,8 @@ require('dotenv').config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const path = require('path');
 const fs = require('fs');
-const { InvoiceExpenseModel, SalarySlipExpenseModel, BaseExpenseModel } = require("../models/expensesModel");
+const { InvoiceExpenseModel, SalarySlipExpenseModel, ManualExpenseModel, BaseExpenseModel } = require("../models/expensesModel");
 
-// const getExpenses = async (req, res) => {
-
-//   const { year, month } = req.query;
-//   console.log(year,month);
-
-//   try {
-//       const expenses = await BaseExpenseModel.find({
-//           year: parseInt(year),
-//           month: parseInt(month)
-//       });
-//       console.log("expenses",expenses);
-
-//       res.status(200).json(expenses);
-//   } catch (error) {
-//       res.status(500).json({ message: 'Error fetching expenses', error: error.message });
-//   }
-// };
-// In expenseController.js
 const getExpenses = async (req, res) => {
     const { startDate, endDate } = req.query;
     try {
@@ -286,32 +268,42 @@ const createUniqueSalarySlipId = (employeeId, date, grossSalary) => {
 
 const addExpenseManually = async (req, res) => {
     try {
-        const { date, category, subCategory, providerName, invoiceTotal, invoiceNumber } = req.body;
+        const {
+            date,
+            category,
+            subCategory,
+            providerName,
+            manualInterval,
+            intervalEndDate,
+            manualTotalAmount,
+            note,
+        } = req.body;
 
-        if (!date || !category || !subCategory || !providerName || invoiceTotal <= 0) {
+        if (!date || !category || !subCategory || !providerName || manualTotalAmount <= 0) {
             return res.status(400).json({ message: 'Missing or invalid required fields' });
         }
 
-        const formattedDate = new Date(date);
-        const finalInvoiceNumber = invoiceNumber || '000';
+        const validIntervals = ['monthly', 'yearly'];
+        if (!validIntervals.includes(manualInterval)) {
+            return res.status(400).json({ message: 'Invalid manual interval. Allowed values are "monthly", or "yearly"' });
+        }
 
-        const uniqueInvoiceId = createUniqueInvoiceId(finalInvoiceNumber, providerName); //000-ABC
-        
-        // TODO: Check if the invoice already exists - HOW?
+        const formattedDate = new Date(date);
 
         const expenseData = {
             date: formattedDate,
             mainCategory: category,
             subCategory: subCategory,
             providerName: providerName,
-            invoiceNumber: finalInvoiceNumber,
-            invoiceTotal: invoiceTotal,
-            invoiceId: uniqueInvoiceId,
+            manualInterval: manualInterval,
+            intervalEndDate: intervalEndDate,
+            manualTotalAmount: manualTotalAmount,
+            note: note || '',
             currency: 'ILS',
-            expenseType: 'invoice',
-        };        
+            expenseType: 'manual',
+        };
 
-        const newExpense = new InvoiceExpenseModel(expenseData);
+        const newExpense = new ManualExpenseModel(expenseData);
         await newExpense.save();
 
         res.status(201).json({ message: 'Expense added successfully', expense: newExpense });

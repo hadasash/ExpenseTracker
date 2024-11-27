@@ -64,7 +64,7 @@ const ActionButtons = () => {
           }}
         >
           <Typography variant="h6" component="h2" sx={{ marginBottom: 2 }}>
-            {t('AddNewExpense')}          
+            {t('addNewExpense')}          
           </Typography>
           <NewExpenseForm onClose={handleClose} />
         </Box>

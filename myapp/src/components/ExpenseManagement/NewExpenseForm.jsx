@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Box,
   TextField,
@@ -10,6 +10,8 @@ import {
   MenuItem,
   FormControlLabel,
   Checkbox,
+  RadioGroup,
+  Radio,
 } from '@mui/material';
 import { apiService } from '../../services/apiService';
 
@@ -33,34 +35,29 @@ const ManualExpenseForm = () => {
     ],
   };
 
+  const [isRecurring, setIsRecurring] = useState(false);
   const [success, setSuccess] = useState(false);
   const [formValues, setFormValues] = useState({
     date: new Date().toISOString().split('T')[0],
     category: '',
     subCategory: '',
-    invoiceNumber: '',
     providerName: '',
-    invoiceTotal: '',
+    description: '',
+    manualTotalAmount: '',
+    manualInterval: 'monthly',
+    intervalEndDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+    note: '',
   });
-
-  const [noInvoiceNumber, setNoInvoiceNumber] = useState(false);
 
   const containerRef = useRef(null);
   const bottomRef = useRef(null);
 
-  useEffect(() => {
-    if (containerRef.current && bottomRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
-  }, []);
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
-    if (name === 'invoiceTotal' && value < 0) {
+    if (name === 'manualTotalAmount' && value < 0) {
       return;
     }
-
     setFormValues({ ...formValues, [name]: value });
 
     if (name === 'category') {
@@ -68,41 +65,45 @@ const ManualExpenseForm = () => {
     }
   };
 
+  const handleCheckboxChange = (event) => {
+    setIsRecurring(event.target.checked);
+    if (!event.target.checked) {
+      setFormValues((prevState) => ({
+        ...prevState,
+        manualInterval: '',
+        intervalEndDate: '',
+      }));
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
-    if (formValues.invoiceTotal <= 0) {
-      alert('Invoice Total must be greater than zero.');
+    if (formValues.manualTotalAmount <= 0) {
+      alert('Expense total must be greater than zero.');
       return;
     }
-  
-    const finalInvoiceNumber = noInvoiceNumber ? '000' : formValues.invoiceNumber;
-  
-    if (!finalInvoiceNumber && !noInvoiceNumber) {
-      alert('Invoice Number is required unless "No Invoice Number" is checked.');
-      return;
-    }
-  
+
     const formattedDate = `${formValues.date}T00:00:00Z`;
-  
+
     const payload = {
       ...formValues,
       date: formattedDate,
-      invoiceNumber: finalInvoiceNumber,
+      totalAmount: formValues.manualTotalAmount,
+      expenseType: 'manual',
+      manualInterval: formValues.manualInterval,
     };
-  
+    if (!isRecurring) delete payload.intervalEndDate;
     setSuccess(false);
-  
     try {
       const response = await apiService.addExpenseManually(payload);
-  
+
       console.log('Server Response:', response);
       setSuccess(true);
     } catch (err) {
       console.error('Error adding expense', err);
       alert('Failed to add the expense. Please try again.');
     }
-  };  
+  };
 
   const availableSubcategories =
     categorySubcategoryMap[formValues.category] || [];
@@ -132,7 +133,7 @@ const ManualExpenseForm = () => {
       >
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid item xs={8}>
               <TextField
                 label="Date"
                 name="date"
@@ -144,7 +145,52 @@ const ManualExpenseForm = () => {
                 InputLabel={{ shrink: true }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={4}>
+              <FormControlLabel
+                control={
+                  <Checkbox checked={isRecurring} onChange={handleCheckboxChange} />
+                }
+                label="Repeat Expense"
+              />
+            </Grid>
+            {isRecurring && (
+              <Grid item xs={12}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={6}>
+                    <RadioGroup
+                      row
+                      name="manualInterval"
+                      value={formValues.manualInterval}
+                      onChange={handleInputChange}
+                    >
+                      <FormControlLabel
+                        value="monthly"
+                        control={<Radio />}
+                        label="Monthly"
+                      />
+                      <FormControlLabel
+                        value="yearly"
+                        control={<Radio />}
+                        label="Yearly"
+                      />
+                    </RadioGroup>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Repeat until"
+                      name="intervalEndDate"
+                      type="date"
+                      fullWidth
+                      value={formValues.intervalEndDate}
+                      onChange={handleInputChange}
+                      required
+                      InputLabel={{ shrink: true }}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            )}
+            <Grid item xs={6}>
               <FormControl fullWidth required>
                 <InputLabel>Category</InputLabel>
                 <Select
@@ -157,7 +203,7 @@ const ManualExpenseForm = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <FormControl fullWidth required>
                 <InputLabel>Subcategory</InputLabel>
                 <Select
@@ -167,9 +213,9 @@ const ManualExpenseForm = () => {
                   disabled={!formValues.category}
                 >
                   {availableSubcategories.map((subcategory) => (
-                    <MenuItem
-                      key={subcategory.value}
-                      value={subcategory.value}
+                    <MenuItem 
+                    key={subcategory.value} 
+                    value={subcategory.value}
                     >
                       {subcategory.label}
                     </MenuItem>
@@ -189,42 +235,32 @@ const ManualExpenseForm = () => {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                label="Invoice Total"
-                name="invoiceTotal"
+                label="Total Amount"
+                name="manualTotalAmount"
                 type="number"
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                 fullWidth
-                value={formValues.invoiceTotal}
+                value={formValues.manualTotalAmount}
                 onChange={handleInputChange}
                 required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                label="Invoice Number"
-                name="invoiceNumber"
+                label="Note"
+                name="note"
+                multiline
                 fullWidth
-                value={formValues.invoiceNumber}
+                value={formValues.note}
                 onChange={handleInputChange}
-                required={!noInvoiceNumber}
-                disabled={noInvoiceNumber}
               />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={noInvoiceNumber}
-                    onChange={(e) => setNoInvoiceNumber(e.target.checked)}
-                  />
-                }
-                label="No Invoice Number Available"
-              />
+             </Grid>
             </Grid>
-          </Grid>
-          <Box ref={bottomRef} sx={{ display: 'flex', justifyContent: 'center', marginTop: 1 }}>
-            <Button type="submit" variant="contained" color="primary">
-              Add Expense
-            </Button>
-          </Box>
+            <Box ref={bottomRef} sx={{ display: 'flex', justifyContent: 'center', marginTop: 1 }}>
+              <Button type="submit" variant="contained" color="primary">
+                Add Expense
+              </Button>
+            </Box>
         </form>
       </Box>
     </Box>

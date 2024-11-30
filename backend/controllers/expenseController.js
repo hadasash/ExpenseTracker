@@ -284,29 +284,68 @@ const addExpenseManually = async (req, res) => {
         }
 
         const validIntervals = ['monthly', 'yearly'];
-        if (!validIntervals.includes(manualInterval)) {
+        if (manualInterval && !validIntervals.includes(manualInterval)) {
             return res.status(400).json({ message: 'Invalid manual interval. Allowed values are "monthly", or "yearly"' });
         }
 
         const formattedDate = new Date(date);
+        
+        let intervalEnd;
+        if (manualInterval && !intervalEndDate) {
+            intervalEnd = new Date(formattedDate);
+            intervalEnd.setFullYear(intervalEnd.getFullYear() + 2);
+        } else {
+            intervalEnd = intervalEndDate ? new Date(intervalEndDate) : null;
+        }
 
-        const expenseData = {
+        const baseExpenseData = {
             date: formattedDate,
             mainCategory: category,
             subCategory: subCategory,
             providerName: providerName,
             manualInterval: manualInterval,
-            intervalEndDate: intervalEndDate,
+            intervalEndDate: intervalEnd,
             manualTotalAmount: manualTotalAmount,
             note: note || '',
             currency: 'ILS',
             expenseType: 'manual',
         };
 
-        const newExpense = new ManualExpenseModel(expenseData);
-        await newExpense.save();
+        // If no interval is specified, just save the single expense
+        if (!manualInterval) {
+            const newExpense = new ManualExpenseModel(baseExpenseData);
+            await newExpense.save();
+            return res.status(201).json({ message: 'Expense added successfully', expense: newExpense });
+        }
 
-        res.status(201).json({ message: 'Expense added successfully', expense: newExpense });
+        // Create recurring expenses
+        const expenses = [];
+        let currentDate = new Date(formattedDate);
+
+        while (currentDate <= intervalEnd) {
+            const expenseData = {
+                ...baseExpenseData,
+                date: new Date(currentDate)
+            };
+
+            const newExpense = new ManualExpenseModel(expenseData);
+            await newExpense.save();
+            expenses.push(newExpense);
+
+            if (manualInterval === 'monthly') {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+            } else if (manualInterval === 'yearly') {
+                currentDate.setFullYear(currentDate.getFullYear() + 1);
+            }
+        }
+
+        res.status(201).json({ 
+            message: 'Recurring expenses added successfully', 
+            expenseCount: expenses.length,
+            expenses: expenses,
+            automaticEndDate: intervalEnd
+        });
+
     } catch (error) {
         console.error('Error adding expense manually:', error);
         res.status(500).json({ message: 'Failed to add the expense', error: error.message });

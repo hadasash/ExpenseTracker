@@ -4,7 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 const ExpenseSummary = ({ selectedMonth, totalAmount, year }) => {
   const { t } = useTranslation();
-  const formattedAmount = totalAmount.toFixed(3);
+  const formattedAmount = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 3
+  }).format(totalAmount);
 
   return (
     <>

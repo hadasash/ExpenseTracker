@@ -14,24 +14,26 @@ import {
   Radio,
 } from '@mui/material';
 import { apiService } from '../../services/apiService';
+import { useTranslation } from 'react-i18next';
 
 const ManualExpenseForm = () => {
+  const { t } = useTranslation();
   const categorySubcategoryMap = {
     costOfRevenues: [
-      { label: 'Salaries and Related', value: 'salariesAndRelated' },
-      { label: 'Commissions', value: 'commissions' },
-      { label: 'Equipment and Software', value: 'equipmentAndSoftware' },
-      { label: 'Office Expenses', value: 'officeExpenses' },
-      { label: 'Vehicle Maintenance', value: 'vehicleMaintenance' },
-      { label: 'Depreciation', value: 'depreciation' },
+      { label: t('categoryDetails.categories.salariesAndRelated'), value: 'salariesAndRelated' },
+      { label: t('categoryDetails.categories.commissions'), value: 'commissions' },
+      { label: t('categoryDetails.categories.equipmentAndSoftware'), value: 'equipmentAndSoftware' },
+      { label: t('categoryDetails.categories.officeExpenses'), value: 'officeExpenses' },
+      { label: t('categoryDetails.categories.vehicleMaintenance'), value: 'vehicleMaintenance' },
+      { label: t('categoryDetails.categories.depreciation'), value: 'depreciation' },
     ],
     generalExpenses: [
-      { label: 'Management Services', value: 'managementServices' },
-      { label: 'Professional Services', value: 'professionalServices' },
-      { label: 'Advertising', value: 'advertising' },
-      { label: 'Rent and Maintenance', value: 'rentAndMaintenance' },
-      { label: 'Postage and Communications', value: 'postageAndCommunications' },
-      { label: 'Office and Other', value: 'officeAndOther' },
+      { label: t('categoryDetails.categories.managementServices'), value: 'managementServices' },
+      { label: t('categoryDetails.categories.professionalServices'), value: 'professionalServices' },
+      { label: t('categoryDetails.categories.advertising'), value: 'advertising' },
+      { label: t('categoryDetails.categories.rentAndMaintenance'), value: 'rentAndMaintenance' },
+      { label: t('categoryDetails.categories.postageAndCommunications'), value: 'postageAndCommunications' },
+      { label: t('categoryDetails.categories.officeAndOther'), value: 'officeAndOther' },
     ],
   };
 
@@ -135,7 +137,7 @@ const ManualExpenseForm = () => {
           <Grid container spacing={2}>
             <Grid item xs={8}>
               <TextField
-                label="Date"
+                label={t('categoryDetails.date')}
                 name="date"
                 type="date"
                 fullWidth
@@ -150,7 +152,7 @@ const ManualExpenseForm = () => {
                 control={
                   <Checkbox checked={isRecurring} onChange={handleCheckboxChange} />
                 }
-                label="Repeat Expense"
+                label={t('repeatExpense')}
               />
             </Grid>
             {isRecurring && (
@@ -166,18 +168,18 @@ const ManualExpenseForm = () => {
                       <FormControlLabel
                         value="monthly"
                         control={<Radio />}
-                        label="Monthly"
+                        label={t('monthly')}
                       />
                       <FormControlLabel
                         value="yearly"
                         control={<Radio />}
-                        label="Yearly"
+                        label={t('yearly')}
                       />
                     </RadioGroup>
                   </Grid>
                   <Grid item xs={6}>
                     <TextField
-                      label="Repeat until"
+                      label={t('repeatUntil')}
                       name="intervalEndDate"
                       type="date"
                       fullWidth
@@ -192,20 +194,20 @@ const ManualExpenseForm = () => {
             )}
             <Grid item xs={6}>
               <FormControl fullWidth required>
-                <InputLabel>Category</InputLabel>
+                <InputLabel>{t('categoryDetails.categories.category')}</InputLabel>
                 <Select
                   name="category"
                   value={formValues.category}
                   onChange={handleInputChange}
                 >
-                  <MenuItem value="costOfRevenues">Cost of Revenues</MenuItem>
-                  <MenuItem value="generalExpenses">General Expenses</MenuItem>
+                  <MenuItem value="costOfRevenues">{t('categoryDetails.categories.costOfRevenues')}</MenuItem>
+                  <MenuItem value="generalExpenses">{t('categoryDetails.categories.generalExpenses')}</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={6}>
               <FormControl fullWidth required>
-                <InputLabel>Subcategory</InputLabel>
+                <InputLabel>{t('categoryDetails.categories.subCategory')}</InputLabel>
                 <Select
                   name="subCategory"
                   value={formValues.subCategory}
@@ -225,7 +227,7 @@ const ManualExpenseForm = () => {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                label="Provider Name"
+                label={t('categoryDetails.provider')}
                 name="providerName"
                 fullWidth
                 value={formValues.providerName}
@@ -235,7 +237,7 @@ const ManualExpenseForm = () => {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                label="Total Amount"
+                label={t('categoryDetails.amount')}
                 name="manualTotalAmount"
                 type="number"
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
@@ -247,7 +249,7 @@ const ManualExpenseForm = () => {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                label="Note"
+                label={t('note')}
                 name="note"
                 multiline
                 fullWidth
@@ -258,7 +260,7 @@ const ManualExpenseForm = () => {
             </Grid>
             <Box ref={bottomRef} sx={{ display: 'flex', justifyContent: 'center', marginTop: 1 }}>
               <Button type="submit" variant="contained" color="primary">
-                Add Expense
+                {t('addExpense')}
               </Button>
             </Box>
         </form>

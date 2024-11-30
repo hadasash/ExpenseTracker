@@ -38,6 +38,8 @@
       "expenseType": "סוג הוצאה",
       "expenseId": "קוד זיהוי הוצאה",
       "categories": {
+        "category": "קטגוריה",
+        "subCategory": "תת קטגוריה",
         "costOfRevenues": "עלות הכנסות",
         "generalExpenses": "הוצאות כלליות",
         "salariesAndRelated": "משכורות ונלוות",
@@ -62,7 +64,12 @@
     "NoExpensesRecordedFor": "אין הוצאות עבור",
     "exportMonthlyReport": "יצוא דוח חודשי",
     "addNewExpense": "הוספת הוצאה חדשה",
-    "addExpense": "הוספת הוצאה"
+    "addExpense": "הוספת הוצאה",
+    "note": "הערה",
+    "repeatExpense": "הוצאה חוזרת",
+    "monthly": "חודשי",
+    "yearly": "שנתי",
+    "repeatUntil": "עד לתאריך"
   },
   "en": {
     "homepageTitle": "Home Page",
@@ -100,6 +107,8 @@
       "status": "Status",
       "paid": "Paid",
       "categories": {
+        "category": "Category",
+        "subCategory": "Subcategory",
         "costOfRevenues": "Cost of Revenues",
         "generalExpenses": "General Expenses",
         "salariesAndRelated": "Salaries and Related",
@@ -125,6 +134,11 @@
     "NoExpensesRecordedFor": "No expenses recorded for",
     "exportMonthlyReport": "Export Monthly Report",
     "addNewExpense": "Add New Expense",
-    "addExpense": "Add Expense"
+    "addExpense": "Add Expense",
+    "note": "Note",
+    "repeatExpense": "Repeat Expense",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "repeatUntil": "Repeat Until"
   }
 }

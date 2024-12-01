@@ -69,7 +69,8 @@
     "repeatExpense": "הוצאה חוזרת",
     "monthly": "חודשי",
     "yearly": "שנתי",
-    "repeatUntil": "עד לתאריך"
+    "repeatUntil": "עד לתאריך",
+    "expenseAddedSuccessfully": "הוצאה נוספה בהצלחה"
   },
   "en": {
     "homepageTitle": "Home Page",
@@ -139,6 +140,7 @@
     "repeatExpense": "Repeat Expense",
     "monthly": "Monthly",
     "yearly": "Yearly",
-    "repeatUntil": "Repeat Until"
+    "repeatUntil": "Repeat Until",
+    "expenseAddedSuccessfully": "Expense Added Successfully"
   }
 }

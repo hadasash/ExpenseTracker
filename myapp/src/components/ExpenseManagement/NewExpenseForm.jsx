@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Box,
   TextField,
@@ -12,12 +12,15 @@ import {
   Checkbox,
   RadioGroup,
   Radio,
+  Typography,
 } from '@mui/material';
 import { apiService } from '../../services/apiService';
 import { useTranslation } from 'react-i18next';
 
 const ManualExpenseForm = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.dir() === 'rtl';
+
   const categorySubcategoryMap = {
     costOfRevenues: [
       { label: t('categoryDetails.categories.salariesAndRelated'), value: 'salariesAndRelated' },
@@ -53,6 +56,10 @@ const ManualExpenseForm = () => {
 
   const containerRef = useRef(null);
   const bottomRef = useRef(null);
+
+  useEffect(() => {
+    setFormValues({ ...formValues });
+  }, [i18n.language]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -98,7 +105,7 @@ const ManualExpenseForm = () => {
     setSuccess(false);
     try {
       const response = await apiService.addExpenseManually(payload);
-
+      
       console.log('Server Response:', response);
       setSuccess(true);
     } catch (err) {
@@ -109,6 +116,14 @@ const ManualExpenseForm = () => {
 
   const availableSubcategories =
     categorySubcategoryMap[formValues.category] || [];
+
+  if (success) {
+    return (
+      <Typography variant="h6" align="center" color="success.main">
+        {t('expenseAddedSuccessfully')}
+      </Typography>
+    );
+  }
 
   return (
     <Box
@@ -121,21 +136,21 @@ const ManualExpenseForm = () => {
         background: 'white',
         height: '100vh',
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: isRTL ? 'row-reverse' : 'row',
       }}
     >
-      <Box
+      <Box 
         ref={containerRef}
-        sx={{
-          flexGrow: 1,
-          overflowY: 'auto',
-          maxHeight: 'calc(100vh - 150px)',
-          padding: '10px',
+        sx={{ 
+          flexGrow: 1, 
+          overflowY: 'auto', 
+          maxHeight: 'calc(100vh - 150px)', 
+          padding: '10px', 
         }}
       >
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
-            <Grid item xs={8}>
+            <Grid item xs={6}>
               <TextField
                 label={t('categoryDetails.date')}
                 name="date"
@@ -144,10 +159,10 @@ const ManualExpenseForm = () => {
                 value={formValues.date}
                 onChange={handleInputChange}
                 required
-                InputLabel={{ shrink: true }}
+                sx={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
               />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={6}>
               <FormControlLabel
                 control={
                   <Checkbox checked={isRecurring} onChange={handleCheckboxChange} />
@@ -186,7 +201,6 @@ const ManualExpenseForm = () => {
                       value={formValues.intervalEndDate}
                       onChange={handleInputChange}
                       required
-                      InputLabel={{ shrink: true }}
                     />
                   </Grid>
                 </Grid>
@@ -256,13 +270,13 @@ const ManualExpenseForm = () => {
                 value={formValues.note}
                 onChange={handleInputChange}
               />
-             </Grid>
             </Grid>
+          </Grid>
             <Box ref={bottomRef} sx={{ display: 'flex', justifyContent: 'center', marginTop: 1 }}>
-              <Button type="submit" variant="contained" color="primary">
-                {t('addExpense')}
-              </Button>
-            </Box>
+            <Button type="submit" variant="contained" color="primary">
+              {t('addExpense')}
+            </Button>
+          </Box>
         </form>
       </Box>
     </Box>

@@ -5,11 +5,9 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useTranslation } from 'react-i18next';
 
 const YearTabs = ({ selectedMonth, setSelectedMonth, setYear }) => {
-  const { t, i18n } = useTranslation(); 
+  const { t } = useTranslation(); 
   const [year, setYearState] = useState(2024);
   
-  // Determine the direction (LTR or RTL)
-  const isRTL = i18n.dir() === 'rtl';
 
   const handleYearIncrement = (increment) => {
     setYearState((prevYear) => {
@@ -31,7 +29,6 @@ const YearTabs = ({ selectedMonth, setSelectedMonth, setYear }) => {
         alignItems="center"
         justifyContent="center"
         mb={2}
-        sx={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
       >
         {/* Left Arrow */}
         <IconButton onClick={() => handleYearIncrement(-1)} size="small">

@@ -28,6 +28,7 @@ import {
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { categorySubcategoryMap } from '../../constants/categoryMap';
+import * as XLSX from 'xlsx';
 
 // Modern color theme
 const theme = {
@@ -55,6 +56,24 @@ const theme = {
       paper: '#ffffff',
     },
   },
+};
+
+const handleDownload = (expenses, mainCategoryLabel, hebrewMonth, year) => {
+  // Prepare data for the Excel file
+  const worksheetData = expenses.map((expense) => ({
+    Date: new Date(expense.date).toLocaleDateString(),
+    Type: expense.expenseType,
+    Provider: expense.providerName || expense.employeeName || t('categoryDetails.unknown'),
+    ID: expense.expenseType === 'manual' ? '' : expense.invoiceId || expense.salarySlipId || t('categoryDetails.unknown'),
+    Amount: `₪${expense.totalAmount.toLocaleString()}`,
+  }));
+
+  // Create a worksheet and workbook
+  const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Expenses');
+
+  XLSX.writeFile(workbook, `Expenses_${mainCategoryLabel}_${hebrewMonth}_${year}.xlsx`);
 };
 
 const CategoryDetailsPage = () => {
@@ -216,6 +235,7 @@ const CategoryDetailsPage = () => {
           </Typography>
           <IconButton
             size="small"
+            onClick={() => handleDownload(expenses, mainCategoryLabel, hebrewMonth, year)}
             sx={{
               '&:hover': {
                 bgcolor: `${theme.palette.primary.main}20`,

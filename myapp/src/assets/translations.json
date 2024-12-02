@@ -23,7 +23,7 @@
     "nextYear": "שנה הבאה",
     "previousYear": "שנה קודמת",
     "categoryDetails": {
-      "categoryName": "קטגוריה לא ידועה",
+      "unknown": "קטגוריה לא ידועה",
       "totalExpenditure": "סה״כ הוצאות",
       "expensesCount": "מספר הוצאות",
       "highestExpense": "הוצאה גבוהה ביותר",
@@ -95,7 +95,7 @@
     "nextYear": "Next Year",
     "previousYear": "Previous Year",
     "categoryDetails": {
-      "categoryName": "Unknown Category",
+      "unknown": "Unknown Category",
       "totalExpenditure": "Total Expenditure",
       "expensesCount": "Number of Expenses",
       "highestExpense": "Highest Expense",

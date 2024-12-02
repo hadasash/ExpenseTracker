@@ -24,10 +24,10 @@ import {
   Receipt as ReceiptIcon,
   AccountBalanceWallet as WalletIcon,
   Download as DownloadIcon,
-  KeyboardArrowLeft as KeyboardArrowLeftIcon,
   Category as CategoryIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { categorySubcategoryMap } from '../../constants/categoryMap';
 
 // Modern color theme
 const theme = {
@@ -55,11 +55,18 @@ const CategoryDetailsPage = () => {
   const { year, month } = useParams();
   const location = useLocation();
   const { t } = useTranslation();
+  const categories = categorySubcategoryMap(t);
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   const mainCategory = location.state?.mainCategory;
   const subCategory = location.state?.subCategory;
   const expenses = location.state?.expenses || [];
+
+  const mainCategoryObject = categories.categories.find(category => category.value === mainCategory);
+  const mainCategoryLabel = mainCategoryObject?.label || t('categoryDetails.unknown');
+
+  const subCategoryObject = categories[mainCategory]?.find(sub => sub.value === subCategory);
+  const subCategoryLabel = subCategoryObject?.label || t('categoryDetails.unknown');
 
   const totalSum = expenses.reduce((sum, expense) => sum + expense.totalAmount, 0);
   const hebrewMonth = new Intl.DateTimeFormat('he-IL', { month: 'long' }).format(new Date(year, parseInt(month) - 1));
@@ -134,12 +141,12 @@ const CategoryDetailsPage = () => {
                 color="white"
                 gutterBottom
               >
-                {t(mainCategory)}
+                {mainCategoryLabel}
               </Typography>
               {subCategory && (
                 <Chip
                   icon={<CategoryIcon sx={{ color: 'white !important' }} />}
-                  label={t(subCategory)}
+                  label={subCategoryLabel}
                   sx={{
                     bgcolor: 'rgba(255, 255, 255, 0.1)',
                     color: 'white',
@@ -163,15 +170,14 @@ const CategoryDetailsPage = () => {
 
       {/* Stats Grid */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={6} md={6}>
           <StatCard
             icon={WalletIcon}
             title={t('categoryDetails.totalExpenditure')}
             value={`₪${totalSum.toLocaleString()}`}
-            subtitle={`${hebrewMonth} ${year}`}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={6} md={6}>
           <StatCard
             icon={ReceiptIcon}
             title={t('categoryDetails.expensesCount')}
@@ -266,21 +272,14 @@ const CategoryDetailsPage = () => {
                       : expense.employeeName || t('categoryDetails.unknown')}                  
                   </TableCell>
                   <TableCell align="right" sx={{ color: 'text.secondary' }}>
-                    {expense.expenseType === 'invoice'
+                    {expense.expenseType === 'manual'
+                      ? ''
+                      : expense.expenseType === 'invoice'
                       ? expense.invoiceId
                       : expense.salarySlipId || t('categoryDetails.unknown')}
                   </TableCell>
-                  <TableCell align="right">
-                    <Stack
-                      direction="row"
-                      spacing={0.5}
-                      alignItems="center"
-                      justifyContent="flex-end"
-                      sx={{ color: theme.palette.primary.main, fontWeight: 600 }}
-                    >
-                      <Typography>₪{expense.totalAmount.toLocaleString()}</Typography>
-                      <KeyboardArrowLeftIcon sx={{ opacity: 0.5, fontSize: 16 }} />
-                    </Stack>
+                  <TableCell align="right" sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
+                    ₪{expense.totalAmount.toLocaleString()}
                   </TableCell>
                 </TableRow>
               ))}

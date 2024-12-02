@@ -16,29 +16,14 @@ import {
 } from '@mui/material';
 import { apiService } from '../../services/apiService';
 import { useTranslation } from 'react-i18next';
+import { categorySubcategoryMap } from '../../constants/categoryMap';
 
 const ManualExpenseForm = () => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.dir() === 'rtl';
 
-  const categorySubcategoryMap = {
-    costOfRevenues: [
-      { label: t('categoryDetails.categories.salariesAndRelated'), value: 'salariesAndRelated' },
-      { label: t('categoryDetails.categories.commissions'), value: 'commissions' },
-      { label: t('categoryDetails.categories.equipmentAndSoftware'), value: 'equipmentAndSoftware' },
-      { label: t('categoryDetails.categories.officeExpenses'), value: 'officeExpenses' },
-      { label: t('categoryDetails.categories.vehicleMaintenance'), value: 'vehicleMaintenance' },
-      { label: t('categoryDetails.categories.depreciation'), value: 'depreciation' },
-    ],
-    generalExpenses: [
-      { label: t('categoryDetails.categories.managementServices'), value: 'managementServices' },
-      { label: t('categoryDetails.categories.professionalServices'), value: 'professionalServices' },
-      { label: t('categoryDetails.categories.advertising'), value: 'advertising' },
-      { label: t('categoryDetails.categories.rentAndMaintenance'), value: 'rentAndMaintenance' },
-      { label: t('categoryDetails.categories.postageAndCommunications'), value: 'postageAndCommunications' },
-      { label: t('categoryDetails.categories.officeAndOther'), value: 'officeAndOther' },
-    ],
-  };
+  // Use imported categorySubcategoryMap with translation function
+  const categories = categorySubcategoryMap(t);
 
   const [isRecurring, setIsRecurring] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -50,7 +35,9 @@ const ManualExpenseForm = () => {
     description: '',
     manualTotalAmount: '',
     manualInterval: 'monthly',
-    intervalEndDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+    intervalEndDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+      .toISOString()
+      .split('T')[0],
     note: '',
   });
 
@@ -75,47 +62,55 @@ const ManualExpenseForm = () => {
   };
 
   const handleCheckboxChange = (event) => {
-    setIsRecurring(event.target.checked);
-    if (!event.target.checked) {
-      setFormValues((prevState) => ({
-        ...prevState,
-        manualInterval: '',
-        intervalEndDate: '',
-      }));
-    }
-  };
+    const checked = event.target.checked;
+    setIsRecurring(checked);
+  
+    setFormValues((prevState) => ({
+      ...prevState,
+      manualInterval: checked ? 'monthly' : '',
+      intervalEndDate: checked
+        ? new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+            .toISOString()
+            .split('T')[0]
+        : '',
+    }));
+  };  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+  
     if (formValues.manualTotalAmount <= 0) {
       alert('Expense total must be greater than zero.');
       return;
     }
-
+  
     const formattedDate = `${formValues.date}T00:00:00Z`;
-
+  
     const payload = {
       ...formValues,
       date: formattedDate,
       totalAmount: formValues.manualTotalAmount,
       expenseType: 'manual',
-      manualInterval: formValues.manualInterval,
     };
-    if (!isRecurring) delete payload.intervalEndDate;
+  
+    // Remove recurring fields if not recurring
+    if (!isRecurring) {
+      delete payload.manualInterval;
+      delete payload.intervalEndDate;
+    }
+  
     setSuccess(false);
     try {
       const response = await apiService.addExpenseManually(payload);
-      
       console.log('Server Response:', response);
       setSuccess(true);
     } catch (err) {
       console.error('Error adding expense', err);
       alert('Failed to add the expense. Please try again.');
     }
-  };
+  };  
 
-  const availableSubcategories =
-    categorySubcategoryMap[formValues.category] || [];
+  const availableSubcategories = categories[formValues.category] || [];
 
   if (success) {
     return (
@@ -139,13 +134,13 @@ const ManualExpenseForm = () => {
         flexDirection: isRTL ? 'row-reverse' : 'row',
       }}
     >
-      <Box 
+      <Box
         ref={containerRef}
-        sx={{ 
-          flexGrow: 1, 
-          overflowY: 'auto', 
-          maxHeight: 'calc(100vh - 150px)', 
-          padding: '10px', 
+        sx={{
+          flexGrow: 1,
+          overflowY: 'auto',
+          maxHeight: 'calc(100vh - 150px)',
+          padding: '10px',
         }}
       >
         <form onSubmit={handleSubmit}>
@@ -214,8 +209,11 @@ const ManualExpenseForm = () => {
                   value={formValues.category}
                   onChange={handleInputChange}
                 >
-                  <MenuItem value="costOfRevenues">{t('categoryDetails.categories.costOfRevenues')}</MenuItem>
-                  <MenuItem value="generalExpenses">{t('categoryDetails.categories.generalExpenses')}</MenuItem>
+                  {categories.categories.map((cat) => (
+                    <MenuItem key={cat.value} value={cat.value}>
+                      {cat.label}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Grid>
@@ -229,10 +227,7 @@ const ManualExpenseForm = () => {
                   disabled={!formValues.category}
                 >
                   {availableSubcategories.map((subcategory) => (
-                    <MenuItem 
-                    key={subcategory.value} 
-                    value={subcategory.value}
-                    >
+                    <MenuItem key={subcategory.value} value={subcategory.value}>
                       {subcategory.label}
                     </MenuItem>
                   ))}
@@ -272,7 +267,7 @@ const ManualExpenseForm = () => {
               />
             </Grid>
           </Grid>
-            <Box ref={bottomRef} sx={{ display: 'flex', justifyContent: 'center', marginTop: 1 }}>
+          <Box ref={bottomRef} sx={{ display: 'flex', justifyContent: 'center', marginTop: 1 }}>
             <Button type="submit" variant="contained" color="primary">
               {t('addExpense')}
             </Button>

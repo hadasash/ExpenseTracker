@@ -31,7 +31,6 @@ const ExpenseManagement = () => {
             setLoading(true);
             try {
                 const data = await apiService.getExpensesByDateRange(startDate, endDate);
-                console.log('Fetched expenses:', data);
                 if (Array.isArray(data)) {
                     setExpenses(data);
                     setError(null);
@@ -47,8 +46,6 @@ const ExpenseManagement = () => {
         fetchExpenses();
     }, [selectedMonth, year]);
     
-      
-
     const calculateTotals = () => {
         const totalAmount = expenses.reduce((sum, expense) => sum + expense.totalAmount, 0);
 

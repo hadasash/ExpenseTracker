@@ -23,11 +23,6 @@ const ExpenseManagement = () => {
                 return;
             }
     
-            if (!year || year < 1900 || year > new Date().getFullYear()) {
-                console.error("Invalid year:", year);
-                return;
-            }
-    
             const startDate = new Date(year, selectedMonth - 1, 1).toISOString();
             const endDate = new Date(year, selectedMonth, 0).toISOString();
     

@@ -2,8 +2,30 @@ import React, { useState } from 'react';
 import { Button, Box, Modal, Typography } from '@mui/material';
 import NewExpenseForm from './NewExpenseForm';
 import { useTranslation } from 'react-i18next';
+import * as XLSX from 'xlsx';
 
-const ActionButtons = () => {
+const handleDownload = (expenses, selectedMonth, year) => {
+  // Prepare data for the Excel file
+  const worksheetData = expenses.map((expense) => ({
+    Date: new Date(expense.date).toLocaleDateString(),
+    Type: expense.expenseType,
+    Category: expense.mainCategory,
+    Subcategory: expense.subCategory,
+    Provider: expense.providerName || expense.employeeName || t('categoryDetails.unknown'),
+    ID: expense.expenseType === 'manual' ? '' : expense.invoiceId || expense.salarySlipId || t('categoryDetails.unknown'),
+    Amount: expense.totalAmount.toLocaleString(),
+    Currency: expense.currency,
+  }));
+
+  // Create a worksheet and workbook
+  const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Expenses');
+
+  XLSX.writeFile(workbook, `Expenses_${selectedMonth}_${year}.xlsx`);
+};
+
+const ActionButtons = ({ expenses, selectedMonth, year }) => {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
 
@@ -46,6 +68,7 @@ const ActionButtons = () => {
             backgroundColor: '#f1f1f1', // צבע רך יותר כאשר העכבר מעל
           },
         }}
+        onClick={() => handleDownload(expenses, selectedMonth, year)}
       >
         {t('exportMonthlyReport')}
       </Button>

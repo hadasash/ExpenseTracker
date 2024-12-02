@@ -134,7 +134,12 @@ const ExpenseManagement = () => {
 
             {/* Action Buttons */}
             <Box mt={4} display="flex" justifyContent="flex-end">
-                <ActionButtons onUpload={apiService.processExpense} />
+                <ActionButtons 
+                    expenses={expenses}
+                    selectedMonth={selectedMonth}
+                    year={year}
+                    onUpload={apiService.processExpense} 
+                />
             </Box>
         </Container>
     );

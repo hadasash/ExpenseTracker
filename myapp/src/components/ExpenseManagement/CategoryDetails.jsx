@@ -44,6 +44,12 @@ const theme = {
       dark: '#0f172a',
       contrastText: '#ffffff',
     },
+    tertiary: {
+      main: '#0ea5e9',
+      light: '#38bdf8',
+      dark: '#0284c7',
+      contrastText: '#ffffff',
+    },
     background: {
       default: '#f8fafc',
       paper: '#ffffff',
@@ -259,9 +265,18 @@ const CategoryDetailsPage = () => {
                       label={t(expense.expenseType)}
                       size="small"
                       sx={{
-                        bgcolor: expense.expenseType === 'invoice'
-                          ? theme.palette.primary.main
-                          : theme.palette.secondary.main,
+                        bgcolor: (() => {
+                          switch (expense.expenseType) {
+                            case 'invoice':
+                              return theme.palette.primary.main;
+                            case 'salarySlip':
+                              return theme.palette.secondary.main;
+                            case 'manual':
+                              return theme.palette.tertiary.main;
+                            default:
+                              return 'grey';
+                          }
+                        })(),
                         color: 'white',
                       }}
                     />

@@ -66,68 +66,68 @@ const ExpenseManagement = () => {
         currentYear: { totalAmount: 0, mainCategoryTotals: {}, subCategoryTotals: {} },
         previousYear: { totalAmount: 0 },
         nextYear: { totalAmount: 0 }
-      });      
+    });
 
-      const fetchYearCalculations = async (targetYear, targetMonth, isCurrentYear = false) => {
+    const fetchYearCalculations = async (targetYear, targetMonth, isCurrentYear = false) => {
         const startDate = new Date(targetYear, targetMonth - 1, 1).toISOString();
         const endDate = new Date(targetYear, targetMonth, 0).toISOString();
       
         try {
-          const data = await apiService.getExpensesByDateRange(startDate, endDate);
-          if (!Array.isArray(data)) return { totalAmount: 0 };
-      
-          if (isCurrentYear) {
-            return calculateTotals(data);
-          }
-      
-          const totalAmount = data.reduce((sum, expense) => {
-            const amount = expense.manualTotalAmount || expense.totalAmount || 0;
-            return sum + (isNaN(Number(amount)) ? 0 : Number(amount));
-          }, 0);
-      
-          return { totalAmount };
-        } catch (err) {
-          console.error(`Failed to fetch expenses for ${targetYear}-${targetMonth}`, err);
-          return { totalAmount: 0 };
-        }
-      };
-      
-      useEffect(() => {
-        const fetchExpensesForYears = async () => {
-          if (!selectedMonth || selectedMonth < 1 || selectedMonth > 12) {
-            console.error("Invalid selectedMonth:", selectedMonth);
-            return;
-          }
-      
-          const yearCalculations = {
-            currentYear: await fetchYearCalculations(year, selectedMonth, true),
-            previousYear: await fetchYearCalculations(year - 1, selectedMonth),
-            nextYear: await fetchYearCalculations(year + 1, selectedMonth)
-          };
-      
-          setYearCalculations(yearCalculations);
-      
-          const startDate = new Date(year, selectedMonth - 1, 1).toISOString();
-          const endDate = new Date(year, selectedMonth, 0).toISOString();
-      
-          setLoading(true);
-          try {
             const data = await apiService.getExpensesByDateRange(startDate, endDate);
-            if (Array.isArray(data)) {
-              setExpenses(data);
-              setError(null);
+            if (!Array.isArray(data)) return { totalAmount: 0 };
+
+            if (isCurrentYear) {
+                return calculateTotals(data);
             }
-          } catch (err) {
-            setError("Failed to fetch expense data");
-            console.error(err);
-          } finally {
-            setLoading(false);
-          }
+
+            const totalAmount = data.reduce((sum, expense) => {
+                const amount = expense.manualTotalAmount || expense.totalAmount || 0;
+                return sum + (isNaN(Number(amount)) ? 0 : Number(amount));
+            }, 0);
+
+            return { totalAmount };
+        } catch (err) {
+            console.error(`Failed to fetch expenses for ${targetYear}-${targetMonth}`, err);
+            return { totalAmount: 0 };
+        }
+    };
+
+    useEffect(() => {
+        const fetchExpensesForYears = async () => {
+            if (!selectedMonth || selectedMonth < 1 || selectedMonth > 12) {
+                console.error("Invalid selectedMonth:", selectedMonth);
+                return;
+            }
+
+            const yearCalculations = {
+                currentYear: await fetchYearCalculations(year, selectedMonth, true),
+                previousYear: await fetchYearCalculations(year - 1, selectedMonth),
+                nextYear: await fetchYearCalculations(year + 1, selectedMonth)
+            };
+
+            setYearCalculations(yearCalculations);
+
+            const startDate = new Date(year, selectedMonth - 1, 1).toISOString();
+            const endDate = new Date(year, selectedMonth, 0).toISOString();
+
+            setLoading(true);
+            try {
+                const data = await apiService.getExpensesByDateRange(startDate, endDate);
+                if (Array.isArray(data)) {
+                    setExpenses(data);
+                    setError(null);
+                }
+            } catch (err) {
+                setError("Failed to fetch expense data");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
         };
-      
+
         fetchExpensesForYears();
-      }, [selectedMonth, year]);
-      
+    }, [selectedMonth, year]);
+
     const { totalAmount, mainCategoryTotals, subCategoryTotals } = calculateTotals(expenses);
 
     return (
@@ -142,22 +142,33 @@ const ExpenseManagement = () => {
 
             {/* Error Message */}
             {error && (
-                <Alert severity="error" sx={{ mb: 3 }}>
+                <Alert severity="error" sx={{ mb: 3, borderRadius: '8px', backgroundColor: '#f8d7da', color: '#721c24' }}>
                     {error}
                 </Alert>
             )}
 
             {/* Expense Summary, Graph, and Breakdown */}
             {expenses.length === 0 ? (
-                <Paper elevation={0} sx={{ p: 3, textAlign: 'center', mt: 3, backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+                <Paper elevation={3} sx={{ p: 4, textAlign: 'center', mt: 3, backgroundColor: '#e9ecef', borderRadius: '12px' }}>
                     <Typography variant="h6" color="textSecondary">
                         {t('No expenses recorded for')} {selectedMonth}/{year}
                     </Typography>
                 </Paper>
             ) : (
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
-                        <Card sx={{ mb: 3, borderRadius: '8px' }}>
+                <Grid container spacing={4} sx={{ display: 'flex', alignItems: 'stretch' }}>
+                    <Grid item xs={12} md={6} sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <Card sx={{ mb: 3, borderRadius: '16px', boxShadow: 3, flex: '0 0 25%' }}>
+                            <CardContent>
+                                <ExpenseSummary
+                                    selectedMonth={selectedMonth}
+                                    year={year}
+                                    totalAmount={totalAmount}
+                                    loading={loading}
+                                />
+                            </CardContent>
+                        </Card>
+
+                        <Card sx={{ mb: 3, borderRadius: '16px', boxShadow: 3, flex: 1 }}>
                             <CardContent>
                                 <CategoryBreakdown
                                     selectedMonth={selectedMonth}
@@ -169,19 +180,8 @@ const ExpenseManagement = () => {
                         </Card>
                     </Grid>
 
-                    <Grid item xs={12} md={6}>
-                        <Card sx={{ mb: 3, borderRadius: '8px' }}>
-                            <CardContent>
-                                <ExpenseSummary
-                                    selectedMonth={selectedMonth}
-                                    year={year}
-                                    totalAmount={totalAmount}
-                                    loading={loading}
-                                />
-                            </CardContent>
-                        </Card>
-
-                        <Card sx={{ mb: 3, borderRadius: '8px' }}>
+                    <Grid item xs={12} md={6} sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <Card sx={{ mb: 3, borderRadius: '16px', boxShadow: 3, flex: 1 }}>
                             <CardContent>
                                 <ExpenseGraph
                                     selectedMonth={selectedMonth}

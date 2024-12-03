@@ -53,17 +53,17 @@ const YearTabs = ({ selectedMonth, setSelectedMonth, setYear, yearCalculations }
         <ArrowForwardIosIcon sx={{ color: '#9e9e9e' }} />
       </IconButton>
 
-      {/* Previous Year */}
+      {/* Next Year */}
       <Box sx={{ textAlign: 'center', minWidth: '120px' }}>
         <Typography
           variant="body2"
           sx={{ fontSize: '0.9rem', color: '#9e9e9e', cursor: 'pointer' }}
-          onClick={() => handleYearChange(year - 1)}
+          onClick={() => handleYearChange(year + 1)}
         >
-          {year - 1}
+          {year + 1}
         </Typography>
         <Typography variant="caption" sx={{ color: '#9e9e9e', display: 'block' }}>
-          {formatTotal(yearCalculations.previousYear.totalAmount)}
+          {formatTotal(yearCalculations.nextYear.totalAmount)}
         </Typography>
       </Box>
 
@@ -87,17 +87,17 @@ const YearTabs = ({ selectedMonth, setSelectedMonth, setYear, yearCalculations }
       {/* Spacer for alignment */}
       <Box sx={{ minWidth: '20px' }} />
 
-      {/* Next Year */}
+      {/* Previous Year */}
       <Box sx={{ textAlign: 'center', minWidth: '120px' }}>
         <Typography
           variant="body2"
           sx={{ fontSize: '0.9rem', color: '#9e9e9e', cursor: 'pointer' }}
-          onClick={() => handleYearChange(year + 1)}
+          onClick={() => handleYearChange(year - 1)}
         >
-          {year + 1}
+          {year - 1}
         </Typography>
         <Typography variant="caption" sx={{ color: '#9e9e9e', display: 'block' }}>
-          {formatTotal(yearCalculations.nextYear.totalAmount)}
+          {formatTotal(yearCalculations.previousYear.totalAmount)}
         </Typography>
       </Box>
 

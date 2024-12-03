@@ -22,7 +22,6 @@ const ManualExpenseForm = () => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.dir() === 'rtl';
 
-  // Use imported categorySubcategoryMap with translation function
   const categories = categorySubcategoryMap(t);
 
   const [isRecurring, setIsRecurring] = useState(false);

@@ -60,6 +60,12 @@
       "fileUpload": "העלאת הוצאות",
       "expenseManagement": "ניהול הוצאות"
     },
+    "tooltip":{
+      "amount":"סכום ",
+      "percentage":"אחוז"
+    },
+    "loading": "טוען...",
+    "noData": "אין נתונים",
     "monthlySummaryTitle": "סיכום הוצאות חודשי",
     "NoExpensesRecordedFor": "אין הוצאות עבור",
     "exportMonthlyReport": "יצוא דוח חודשי",
@@ -130,6 +136,12 @@
       "fileUpload": "Upload Expenses",
       "expenseManagement": "Manage Expenses"
     },
+    "tooltip":{
+      "amount":"Amount",
+      "percentage":"Percentage"
+    },
+    "loading": "Loading...",
+    "noData": "No Data",
     "monthlySummaryTitle": "Monthly Expense Summary",
     "graphTitle":"Expense Distribution by Subcategory",
     "NoExpensesRecordedFor": "No expenses recorded for",

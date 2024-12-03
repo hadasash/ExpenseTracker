@@ -4,7 +4,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useTranslation } from 'react-i18next';
 
-const YearTabs = ({ selectedMonth, setSelectedMonth, setYear }) => {
+const YearTabs = ({ selectedMonth, setSelectedMonth, setYear, yearCalculations }) => {
   const { t } = useTranslation();
   const [year, setYearState] = useState(2024);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -35,31 +35,46 @@ const YearTabs = ({ selectedMonth, setSelectedMonth, setYear }) => {
     setAnchorEl(null); // Close the menu
   };
 
-  // Generate an array of years from 1990 to the current year + 50
+  const formatTotal = (total) => {
+    if (total === undefined || total === null) return '0';
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(total);
+  };  
+
   const availableYears = Array.from({ length: 100 }, (_, index) => 1990 + index);
 
   return (
     <Box>
-      <Box display="flex" alignItems="center" justifyContent="center" mb={2}>
-        {/* Left Arrow */}
-        <IconButton onClick={() => handleYearIncrement(-1)} size="small">
-          <ArrowForwardIosIcon />
-        </IconButton>
+    <Box display="flex" alignItems="center" justifyContent="center" mb={2}>
+      {/* Left Arrow */}
+      <IconButton onClick={() => handleYearIncrement(-1)} size="small">
+        <ArrowForwardIosIcon sx={{ color: '#9e9e9e' }} />
+      </IconButton>
 
-        {/* Previous Year */}
+      {/* Previous Year */}
+      <Box sx={{ textAlign: 'center', minWidth: '120px' }}>
         <Typography
           variant="body2"
-          sx={{ fontSize: '0.9rem', mx: 2, cursor: 'pointer' }}
+          sx={{ fontSize: '0.9rem', color: '#9e9e9e', cursor: 'pointer' }}
           onClick={() => handleYearChange(year - 1)}
         >
           {year - 1}
         </Typography>
+        <Typography variant="caption" sx={{ color: '#9e9e9e', display: 'block' }}>
+          {formatTotal(yearCalculations.previousYear.totalAmount)}
+        </Typography>
+      </Box>
 
-        {/* Current Year - Clickable */}
+      {/* Spacer for alignment */}
+      <Box sx={{ minWidth: '20px' }} />
+
+      {/* Current Year */}
+      <Box sx={{ textAlign: 'center', minWidth: '120px' }}>
         <Typography
           variant="h6"
           sx={{
-            mx: 2,
             fontWeight: 'bold',
             cursor: 'pointer',
           }}
@@ -67,30 +82,41 @@ const YearTabs = ({ selectedMonth, setSelectedMonth, setYear }) => {
         >
           {year}
         </Typography>
+      </Box>
 
-        {/* Next Year */}
+      {/* Spacer for alignment */}
+      <Box sx={{ minWidth: '20px' }} />
+
+      {/* Next Year */}
+      <Box sx={{ textAlign: 'center', minWidth: '120px' }}>
         <Typography
           variant="body2"
-          sx={{ fontSize: '0.9rem', mx: 2, cursor: 'pointer' }}
+          sx={{ fontSize: '0.9rem', color: '#9e9e9e', cursor: 'pointer' }}
           onClick={() => handleYearChange(year + 1)}
         >
           {year + 1}
         </Typography>
-
-        {/* Right Arrow */}
-        <IconButton onClick={() => handleYearIncrement(1)} size="small">
-          <ArrowBackIosIcon />
-        </IconButton>
-
-        {/* Year Menu */}
-        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-          {availableYears.map((y) => (
-            <MenuItem key={y} onClick={() => handleYearChange(y)}>
-              {y}
-            </MenuItem>
-          ))}
-        </Menu>
+        <Typography variant="caption" sx={{ color: '#9e9e9e', display: 'block' }}>
+          {formatTotal(yearCalculations.nextYear.totalAmount)}
+        </Typography>
       </Box>
+
+      {/* Right Arrow */}
+      <IconButton onClick={() => handleYearIncrement(1)} size="small">
+        <ArrowBackIosIcon sx={{ color: '#9e9e9e' }} />
+      </IconButton>
+
+      {/* Year Menu */}
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+        {availableYears.map((y) => (
+          <MenuItem key={y} onClick={() => handleYearChange(y)}>
+            {y}
+          </MenuItem>
+        ))}
+      </Menu>
+    </Box>
+
+
 
       <Tabs
         value={selectedMonth || 1}

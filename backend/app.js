@@ -5,9 +5,13 @@ const ExpensesRouter = require('./routes/expenses');
 const cors = require('cors'); 
 
 const app = express();
-app.use(cors()); 
 
-const port = 3000;
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || '*',  // You can set this to a specific origin (e.g., 'https://yourfrontend.com')
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+};
+
+app.use(cors(corsOptions));
 
 async function connectToDatabase() {
   try {
@@ -19,8 +23,10 @@ async function connectToDatabase() {
     console.log("Connected to MongoDB");
   } catch (err) {
     console.error("Error connecting to MongoDB Atlas", err);
+    process.exit(1);  // Exit process if connection fails
   }
 }
+
 (async () => {
   await connectToDatabase();
   console.log('Database connection established');
@@ -28,7 +34,9 @@ async function connectToDatabase() {
   app.use(express.json());
   app.use('/expenses', ExpensesRouter);
 
+  const port = process.env.PORT || 3000;
+
   app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
-}); 
+    console.log(`Server is running at http://localhost:${port}`);
+  }); 
 })();

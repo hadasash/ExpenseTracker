@@ -11,6 +11,12 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 };
 
+app.use(express.static(path.join(__dirname, 'myapp/build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'myapp/build', 'index.html'));
+});
+
 app.use(cors(corsOptions));
 
 async function connectToDatabase() {

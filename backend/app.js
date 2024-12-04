@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path');  // Ensure this is required
+const path = require('path');
 const ExpensesRouter = require('./routes/expenses');
 const cors = require('cors'); 
 
@@ -25,7 +25,7 @@ async function connectToDatabase() {
     console.log("Connected to MongoDB");
   } catch (err) {
     console.error("Error connecting to MongoDB Atlas", err);
-    process.exit(1);  // Exit process if connection fails
+    process.exit(1);
   }
 }
 

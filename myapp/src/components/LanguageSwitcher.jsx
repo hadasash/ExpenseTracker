@@ -20,7 +20,8 @@ const LanguageSwitcher = () => {
 
   const languages = [
     { code: 'he', label: 'עברית', dir: 'rtl' },
-    { code: 'en', label: 'English', dir: 'ltr' }
+    { code: 'en', label: 'English', dir: 'ltr' },
+    { code: 'es', label: 'Español', dir: 'ltr' },
   ];
 
   const handleClick = (event) => {

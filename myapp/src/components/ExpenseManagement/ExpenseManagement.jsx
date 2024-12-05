@@ -151,7 +151,7 @@ const ExpenseManagement = () => {
             {expenses.length === 0 ? (
                 <Paper elevation={3} sx={{ p: 4, textAlign: 'center', mt: 3, backgroundColor: '#e9ecef', borderRadius: '12px' }}>
                     <Typography variant="h6" color="textSecondary">
-                        {t('No expenses recorded for')} {selectedMonth}/{year}
+                        {t('NoExpensesRecordedFor')} {selectedMonth}/{year}
                     </Typography>
                 </Paper>
             ) : (

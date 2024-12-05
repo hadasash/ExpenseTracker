@@ -14,6 +14,9 @@ i18n
       en: {
         translation: translations.en, // תרגומים לאנגלית
       },
+      es: {
+        translation: translations.es, // תרגומים ספרדית
+      },
     },
     lng: 'he', // ברירת המחדל היא 'he'
     fallbackLng: 'he', // אם אין תרגום בשפה הנבחרת, תשתמש ב- 'he'

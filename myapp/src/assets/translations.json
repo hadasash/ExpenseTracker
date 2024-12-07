@@ -234,5 +234,83 @@
       "welcome": "Welcome to Dashboard",
       "welcomeSubtitle": "Get insights and a comprehensive overview of your expenses"
     }
+  },
+  "es": {
+    "homepageTitle": "Página de inicio",
+    "uploadButton": "Subir archivos",
+    "welcomeMessage": "Bienvenido",
+    "expenseBreakdown": "Desglose de gastos por categoría",
+    "expenseManager": "Gestor de gastos",
+    "total": "Total",
+    "failedToFetch": "Error al obtener datos",
+    "January": "Enero",
+    "February": "Febrero",
+    "March": "Marzo",
+    "April": "Abril",
+    "May": "Mayo",
+    "June": "Junio",
+    "July": "Julio",
+    "August": "Agosto",
+    "September": "Septiembre",
+    "October": "Octubre",
+    "November": "Noviembre",
+    "December": "Diciembre",
+    "nextYear": "Próximo año",
+    "previousYear": "Año anterior",
+    "categoryDetails": {
+      "unknown": "Categoría desconocida",
+      "totalExpenditure": "Gasto total",
+      "expensesCount": "Número de gastos",
+      "highestExpense": "Gasto más alto",
+      "lowestExpense": "Gasto más bajo",
+      "expenseDetails": "Detalles del gasto",
+      "date": "Fecha",
+      "provider": "Proveedor",
+      "expenseNumber": "Número de gasto",
+      "amount": "Cantidad",
+      "status": "Estado",
+      "paid": "Pagado",
+      "categories": {
+        "category": "Categoría",
+        "subCategory": "Subcategoría",
+        "costOfRevenues": "Costo de ingresos",
+        "generalExpenses": "Gastos generales",
+        "salariesAndRelated": "Salarios y relacionados",
+        "commissions": "Comisiones",
+        "equipmentAndSoftware": "Equipo y software",
+        "officeExpenses": "Gastos de oficina",
+        "vehicleMaintenance": "Mantenimiento de vehículos",
+        "depreciation": "Depreciación",
+        "managementServices": "Servicios de gestión",
+        "professionalServices": "Servicios profesionales",
+        "advertising": "Publicidad",
+        "rentAndMaintenance": "Alquiler y mantenimiento",
+        "postageAndCommunications": "Correo y comunicaciones",
+        "officeAndOther": "Oficina y otros"
+      }
+    },
+    "navbar": {
+      "fileUpload": "Cargar gastos",
+      "expenseManagement": "Gestionar gastos"
+    },
+    "tooltip":{
+      "amount":"Cantidad",
+      "percentage":"Porcentaje"
+    },
+    "loading": "Cargando...",
+    "noData": "Sin datos",
+    "monthlySummaryTitle": "Resumen de gastos mensuales",
+    "graphTitle":"Distribución de gastos por subcategoría",
+    "NoExpensesRecordedFor": "No hay gastos registrados para",
+    "exportMonthlyReport": "Exportar informe mensual",
+    "addNewExpense": "Agregar nuevo gasto",
+    "addExpense": "Agregar gasto",
+    "note": "Nota",
+    "repeatExpense": "Repetir gasto",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "repeatUntil": "Repetir hasta",
+    "expenseAddedSuccessfully": "Gasto agregado con éxito"
+ 
   }
 }

@@ -18,6 +18,16 @@
       "startAnalysis": "Start Analysis",
       "filesProcessedSuccessfully": "The files were processed successfully!",
       "fileProcessingError": "An error occurred while processing the files. Please try again."
+    },
+    "es": {
+      "fileUploadTitle": "Carga de gastos al sistema",
+      "dragAndDrop": "Arrastra y suelta archivos aquí",
+      "clickToSelectFiles": "O haz clic para seleccionar archivos",
+      "selectedFiles": "Archivos seleccionados",
+      "processing": "Procesando...",
+      "startAnalysis": "Comenzar análisis",
+      "filesProcessedSuccessfully": "Los archivos se procesaron correctamente!",
+      "fileProcessingError": "Se produjo un error al procesar los archivos. Por favor, inténtalo de nuevo."
     }
   }
   

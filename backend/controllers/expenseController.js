@@ -115,6 +115,7 @@ const processExpenses = async (req, res) => {
             Extract key details for all expenses:
             - Ensure that the date values are in the format "yyyy-mm-ddT00:00:00Z". When no day is provided, use the first day of the month.
             - Ensure all currency values are returned using ISO currency codes (e.g., use "USD" instead of "$", "ILS" instead of "₪").
+            - Ensure date equals the invoice date or the salary slip date and not the range in which the expense was incurred.
             `;
         const generatedContent = await model.generateContent([prompt, ...imageParts]);
         const summary = generatedContent.response.text();

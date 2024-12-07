@@ -34,23 +34,36 @@ const ExpenseManagement = () => {
             };
         }
 
+        // Detailed logging for debugging
+        const expenseDetails = expensesArray.map(expense => ({
+            totalAmount: expense.totalAmount,
+            convertedAmountILS: expense.convertedAmountILS,
+            currency: expense.currency,
+            date: expense.date
+        }));
+        console.group('Total Amount Calculation');
+        console.log('Expense Details:', expenseDetails);
+
         const totalAmount = expensesArray.reduce((sum, expense) => {
-            const amount = expense.manualTotalAmount || expense.totalAmount || 0;
+            const amount = expense.convertedAmountILS || expense.totalAmount || 0;
             const parsedAmount = Number(amount);
             
             return sum + (isNaN(parsedAmount) ? 0 : parsedAmount);
         }, 0);
 
+        console.log('Calculated Total Amount:', totalAmount);
+        console.groupEnd();
+
         const mainCategoryTotals = expensesArray.reduce((acc, expense) => {
             const mainCategory = expense.mainCategory || 'Uncategorized';
-            const amount = Number(expense.manualTotalAmount) || 0;
+            const amount = Number(expense.convertedAmountILS || expense.totalAmount) || 0;
             acc[mainCategory] = (acc[mainCategory] || 0) + amount;
             return acc;
         }, {});
 
         const subCategoryTotals = expensesArray.reduce((acc, expense) => {
             const subCategory = expense.subCategory || 'Unspecified';
-            const amount = Number(expense.manualTotalAmount) || 0;
+            const amount = Number(expense.convertedAmountILS || expense.totalAmount) || 0;
             acc[subCategory] = (acc[subCategory] || 0) + amount;
             return acc;
         }, {});
@@ -62,7 +75,49 @@ const ExpenseManagement = () => {
         };
     };
 
-    // Detailed expense calculation function
+    const calculateMonthlyTotals = (expenses) => {
+        // Initialize an array to store monthly totals
+        const monthlyTotals = new Array(12).fill(0);
+
+        // Detailed logging array to understand each expense
+        const expenseDetails = [];
+
+        // Iterate through all expenses
+        expenses.forEach(expense => {
+            // Parse the date of the expense
+            const expenseDate = new Date(expense.date);
+            
+            // Extract year and month
+            const expenseYear = expenseDate.getFullYear();
+            const expenseMonth = expenseDate.getMonth();
+            
+            // Get the total amount, prioritizing convertedAmountILS
+            const amount = Number(expense.convertedAmountILS || expense.totalAmount || 0);
+
+            // Store detailed expense information for debugging
+            expenseDetails.push({
+                date: expense.date,
+                year: expenseYear,
+                month: expenseMonth,
+                amount: amount,
+                providerName: expense.providerName
+            });
+
+            // Add to monthly totals if the amount is valid
+            if (amount > 0) {
+                monthlyTotals[expenseMonth] += amount;
+            }
+        });
+
+        // Log detailed breakdown for debugging
+        console.group('Monthly Totals Calculation');
+        console.log('Expense Details:', expenseDetails);
+        console.log('Monthly Totals:', monthlyTotals);
+        console.groupEnd();
+
+        return monthlyTotals;
+    };
+
     const calculateDetailedExpenseTotals = (expenses) => {
         console.group('Detailed Expense Calculation');
         
@@ -88,49 +143,6 @@ const ExpenseManagement = () => {
             totalAmount,
             expenseBreakdown
         };
-    };
-
-    const calculateMonthlyTotals = (expenses) => {
-        // Initialize an array to store monthly totals
-        const monthlyTotals = new Array(12).fill(0);
-
-        // Detailed logging array to understand each expense
-        const expenseDetails = [];
-
-        // Iterate through all expenses
-        expenses.forEach(expense => {
-            // Parse the date of the expense
-            const expenseDate = new Date(expense.date);
-            
-            // Extract year and month
-            const expenseYear = expenseDate.getFullYear();
-            const expenseMonth = expenseDate.getMonth();
-            
-            // Get the total amount, prioritizing totalAmount
-            const amount = Number(expense.totalAmount || 0);
-
-            // Store detailed expense information for debugging
-            expenseDetails.push({
-                date: expense.date,
-                year: expenseYear,
-                month: expenseMonth,
-                amount: amount,
-                providerName: expense.providerName
-            });
-
-            // Add to monthly totals if the amount is valid
-            if (amount > 0) {
-                monthlyTotals[expenseMonth] += amount;
-            }
-        });
-
-        // Log detailed breakdown for debugging
-        console.group('Monthly Totals Calculation');
-        console.log('Expense Details:', expenseDetails);
-        console.log('Monthly Totals:', monthlyTotals);
-        console.groupEnd();
-
-        return monthlyTotals;
     };
 
     const [yearCalculations, setYearCalculations] = useState({
@@ -224,7 +236,7 @@ const ExpenseManagement = () => {
 
     // Calculate total for the specific month with detailed logging
     const monthTotalAmount = expenses.reduce((sum, expense) => {
-        const amount = Number(expense.manualTotalAmount || expense.totalAmount || 0);
+        const amount = Number(expense.convertedAmountILS || expense.totalAmount || 0);
         console.log('Individual Expense:', {
             date: expense.date,
             providerName: expense.providerName,

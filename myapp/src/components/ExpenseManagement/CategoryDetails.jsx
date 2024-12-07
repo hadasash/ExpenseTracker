@@ -272,17 +272,31 @@ const CategoryDetailsPage = () => {
     );
   };
 
-  useEffect(() => {
-    onExpensesUpdated();
-  }, [location.state]);
+  const renderExpenseAmount = (expense) => {
+    const originalAmount = expense.totalAmount;
+    const convertedAmount = expense.convertedAmountILS || originalAmount;
+    const conversionRate = expense.conversionRate || 1;
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    // If the currency is not ILS, show both original and converted amounts
+    if (expense.currency !== 'ILS') {
+      return (
+        <Box>
+          <Typography variant="body2">
+            {`${originalAmount.toLocaleString()} ${expense.currency}`}
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            {`₪${convertedAmount.toLocaleString()} (Rate: ${conversionRate.toFixed(2)})`}
+          </Typography>
+        </Box>
+      );
+    }
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    // If the currency is already ILS, just show the amount
+    return (
+      <Typography variant="body2">
+        {`₪${convertedAmount.toLocaleString()}`}
+      </Typography>
+    );
   };
 
   const handleDownload = () => {
@@ -292,7 +306,10 @@ const CategoryDetailsPage = () => {
       [t('categoryDetails.subcategory')]: expense.subCategory || t('categoryDetails.unknown'),
       [t('categoryDetails.provider')]: expense.providerName || expense.employeeName || t('categoryDetails.unknown'),
       [t('categoryDetails.expenseNumber')]: expense.expenseType === 'manual' ? '' : expense.invoiceId || expense.salarySlipId || t('categoryDetails.unknown'),
-      [t('categoryDetails.amount')]: `₪${expense.totalAmount.toLocaleString()}`,
+      [t('categoryDetails.originalAmount')]: `${expense.totalAmount.toLocaleString()} ${expense.currency}`,
+      [t('categoryDetails.convertedAmount')]: `₪${(expense.convertedAmountILS || expense.totalAmount).toLocaleString()}`,
+      [t('categoryDetails.conversionRate')]: expense.conversionRate || 1,
+      [t('categoryDetails.conversionDate')]: expense.date ? new Date(expense.date).toLocaleDateString() : t('categoryDetails.unknown')
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
@@ -351,9 +368,22 @@ const CategoryDetailsPage = () => {
     setDeleteDialogOpen(false);
   };
 
-  const totalSum = useMemo(() => {
-    return expenses.reduce((sum, expense) => sum + expense.totalAmount, 0);
+  const totalExpenses = useMemo(() => {
+    return expenses.reduce((sum, expense) => sum + (expense.convertedAmountILS || expense.totalAmount), 0);
   }, [expenses]);
+
+  useEffect(() => {
+    onExpensesUpdated();
+  }, [location.state]);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     <Box 
@@ -532,16 +562,7 @@ const CategoryDetailsPage = () => {
                     </Typography>
                   </TableCell>
                   <TableCell align="right">
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        fontWeight: 600,
-                        color: '#e74c3c',
-                        textAlign: 'right'
-                      }}
-                    >
-                      ₪{expense.totalAmount.toLocaleString()}
-                    </Typography>
+                    {renderExpenseAmount(expense)}
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontWeight: 500, color: '#4a5568', textAlign: 'right' }}>
@@ -613,7 +634,7 @@ const CategoryDetailsPage = () => {
                         textAlign: 'right'
                       }}
                     >
-                      ₪{totalSum.toLocaleString()}
+                      ₪{totalExpenses.toLocaleString()}
                     </Typography>
                   </Box>
                 </TableCell>

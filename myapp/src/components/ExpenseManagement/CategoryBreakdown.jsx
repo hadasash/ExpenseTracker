@@ -28,15 +28,33 @@ const CategoryBreakdown = ({ selectedMonth, year, expenses, loading }) => {
       subCategories: {},
     };
 
+    // Detailed logging for debugging
+    const expenseDetails = expenses.map(expense => ({
+      mainCategory: expense.mainCategory,
+      subCategory: expense.subCategory,
+      totalAmount: expense.totalAmount,
+      convertedAmountILS: expense.convertedAmountILS,
+      currency: expense.currency
+    }));
+    console.group('Category Breakdown Totals');
+    console.log('Expense Details:', expenseDetails);
+
     expenses.forEach((expense) => {
-      const { mainCategory, subCategory, totalAmount } = expense;      
+      const { mainCategory, subCategory } = expense;
+      
+      // Prioritize convertedAmountILS, fall back to totalAmount
+      const amount = Number(expense.convertedAmountILS || expense.totalAmount || 0);
 
       totals.mainCategories[mainCategory] =
-        (totals.mainCategories[mainCategory] || 0) + totalAmount;
+        (totals.mainCategories[mainCategory] || 0) + amount;
 
       totals.subCategories[subCategory] =
-        (totals.subCategories[subCategory] || 0) + totalAmount;
+        (totals.subCategories[subCategory] || 0) + amount;
     });
+
+    console.log('Main Category Totals:', totals.mainCategories);
+    console.log('Sub Category Totals:', totals.subCategories);
+    console.groupEnd();
 
     return totals;
   };

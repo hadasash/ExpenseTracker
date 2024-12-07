@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const axios = require('axios');
 const { expenseCategoryEnum, expenseSubCategoryEnum } = require('../constants/enums');
 
 const categorySubcategoryMap = {
@@ -28,6 +29,172 @@ const getMainCategoryForSubcategory = (subCategory) => {
   }
   return null;
 };
+
+function formatDate(date) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+async function fetchOfficialExchangeRate(currency, date) {
+  // Mapping of currencies to Bank of Israel API series codes
+  const currencySeriesCodes = {
+    'USD': 'RER_USD_ILS',
+    'EUR': 'RER_EUR_ILS',
+    'GBP': 'RER_GBP_ILS',
+    'CAD': 'RER_CAD_ILS',
+    'AUD': 'RER_AUD_ILS'
+  };
+
+  // Comprehensive logging function
+  const logConversionAttempt = (method, details) => {
+    console.log(JSON.stringify({
+      timestamp: new Date().toISOString(),
+      method: method,
+      currency: currency,
+      date: date instanceof Date ? date.toISOString() : date,
+      ...details
+    }, null, 2));
+  };
+
+  try {
+    // Validate and normalize input
+    if (!currency) {
+      logConversionAttempt('validation', { error: 'No currency provided' });
+      throw new Error('Currency is required for conversion');
+    }
+
+    // Normalize date
+    const conversionDate = date instanceof Date ? date : new Date(date);
+    if (isNaN(conversionDate.getTime())) {
+      logConversionAttempt('validation', { error: 'Invalid date provided' });
+      throw new Error('Invalid date for conversion');
+    }
+
+    // Check if the date is in the future
+    const today = new Date();
+    const isFutureDate = conversionDate > today;
+
+    // Comprehensive currency mapping with fallback rates
+    const currencyRates = {
+      'USD': { 
+        seriesCode: 'RER_USD_ILS',
+        defaultRate: 3.7,
+        symbol: '$'
+      },
+      'EUR': { 
+        seriesCode: 'RER_EUR_ILS',
+        defaultRate: 4.0,
+        symbol: '€'
+      }
+    };
+
+    // Check if currency is supported
+    const currencyConfig = currencyRates[currency];
+    if (!currencyConfig) {
+      logConversionAttempt('unsupported_currency', { 
+        message: 'Currency not supported',
+        supportedCurrencies: Object.keys(currencyRates)
+      });
+      return currencyConfig?.defaultRate || 1;
+    }
+
+    // If it's a future date, use the default rate
+    if (isFutureDate) {
+      const defaultRate = currencyConfig?.defaultRate || 1;
+      
+      logConversionAttempt('future_date_rate', { 
+        rate: defaultRate,
+        source: 'Default Rate',
+        note: 'Using default rate for future date'
+      });
+      
+      return defaultRate;
+    }
+
+    // Format date for API
+    const formattedDate = formatDate(conversionDate);
+
+    // First, attempt to fetch from Bank of Israel's new API
+    try {
+      // Construct the API URL for the specific currency and date
+      const apiUrl = `https://edge.boi.org.il/FusionEdgeServer/sdmx/v2/data/dataflow/BOI.STATISTICS/EXR/1.0/${currencyConfig.seriesCode}?startperiod=${formattedDate}&endperiod=${formattedDate}&format=sdmx-json`;
+      
+      console.log(`Attempting to fetch exchange rate from Bank of Israel API: ${apiUrl}`);
+      
+      const response = await axios.get(apiUrl, {
+        timeout: 5000, // 5-second timeout
+        headers: {
+          'User-Agent': 'ExpenseTracker/1.0',
+          'Accept': 'application/vnd.sdmx.data+json'
+        }
+      });
+
+      // Parse SDMX-JSON response
+      const dataSets = response.data?.data?.dataSets;
+      if (dataSets && dataSets.length > 0) {
+        const series = dataSets[0].series;
+        const seriesKeys = Object.keys(series);
+        
+        if (seriesKeys.length > 0) {
+          const observations = series[seriesKeys[0]].observations;
+          const observationKeys = Object.keys(observations);
+          
+          if (observationKeys.length > 0) {
+            const rateValue = parseFloat(observations[observationKeys[0]][0]);
+
+            if (!isNaN(rateValue)) {
+              logConversionAttempt('boi_success', { 
+                rate: rateValue,
+                source: 'Bank of Israel New API (SDMX-JSON)',
+                date: formattedDate
+              });
+              return rateValue;
+            }
+          }
+        }
+      }
+
+      console.warn(`No valid rate found in API response for ${currency} on ${formattedDate}`);
+    } catch (boiError) {
+      console.error('Bank of Israel API Error:', {
+        message: boiError.message,
+        response: boiError.response ? boiError.response.data : 'No response',
+        status: boiError.response ? boiError.response.status : 'Unknown'
+      });
+
+      logConversionAttempt('boi_error', { 
+        message: boiError.message,
+        fallbackUsed: true
+      });
+    }
+
+    // Fallback: use default rate
+    const defaultRate = currencyConfig?.defaultRate || 1;
+    
+    logConversionAttempt('fallback_rate', { 
+      rate: defaultRate,
+      source: 'Default Rate',
+      note: 'Using default rate due to API failure'
+    });
+    
+    return defaultRate;
+
+  } catch (error) {
+    // Ultimate error handling
+    console.error('Critical error in currency conversion:', {
+      currency: currency,
+      date: date,
+      errorMessage: error.message,
+      errorStack: error.stack
+    });
+
+    // Always return a safe default
+    return 1;
+  }
+}
 
 const baseExpenseSchema = new mongoose.Schema({
   date: {
@@ -67,8 +234,51 @@ const baseExpenseSchema = new mongoose.Schema({
   },
   currency: {
     type: String,
+    default: 'ILS',
     description: 'Currency of the expense'
   },
+  convertedAmountILS: {
+    type: Number,
+    description: 'Amount converted to Israeli Shekels'
+  },
+  conversionRate: {
+    type: Number,
+    description: 'Exchange rate used for conversion'
+  },
+  conversionDate: {
+    type: Date,
+    description: 'Date used for currency conversion'
+  }
+}, {
+  methods: {
+    async convertToILS() {
+      if (this.currency === 'ILS') {
+        this.convertedAmountILS = this.totalAmount;
+        this.conversionRate = 1;
+        return;
+      }
+
+      try {
+        const conversionDate = this.date || new Date();
+        const exchangeRate = await fetchOfficialExchangeRate(this.currency, conversionDate);
+
+        this.convertedAmountILS = this.totalAmount * exchangeRate;
+        this.conversionRate = exchangeRate;
+        this.conversionDate = conversionDate;
+
+        console.log('Currency Conversion:', {
+          originalAmount: this.totalAmount,
+          currency: this.currency,
+          exchangeRate: exchangeRate,
+          convertedAmount: this.convertedAmountILS
+        });
+      } catch (error) {
+        console.error('Conversion Error:', error);
+        this.convertedAmountILS = this.totalAmount;
+        this.conversionRate = 1;
+      }
+    }
+  }
 });
 
 const invoiceSpecificFields = new mongoose.Schema({
@@ -135,17 +345,107 @@ const manualExpenseSpecificFields = new mongoose.Schema({
 });
 
 baseExpenseSchema.pre('validate', function(next) {
-  // Auto-correct the mainCategory based on the subCategory if needed
   const correctMainCategory = getMainCategoryForSubcategory(this.subCategory);
   if (correctMainCategory && this.mainCategory !== correctMainCategory) {
     this.mainCategory = correctMainCategory;
   }
   
-  // Validate the category-subcategory relationship
   if (!categorySubcategoryMap[this.mainCategory]?.includes(this.subCategory)) {
     return next(new Error(`Invalid subcategory "${this.subCategory}" for main category "${this.mainCategory}"`));
   }
 
+  next();
+});
+
+baseExpenseSchema.pre('save', async function(next) {
+  if (this.__t === 'InvoiceExpense' && this.invoiceTotal && !this.totalAmount) {
+    console.log('📝 Setting totalAmount from invoiceTotal for invoice expense', {
+      invoiceTotal: this.invoiceTotal,
+      currency: this.currency
+    });
+    this.totalAmount = this.invoiceTotal;
+  }
+
+  console.log('🔄 Pre-save hook started for expense');
+  console.log('Original Expense Details:', {
+    currency: this.currency,
+    totalAmount: this.totalAmount,
+    date: this.date,
+    convertedAmountILS: this.convertedAmountILS,
+    documentContext: {
+      isNew: this.isNew,
+      __v: this.__v,
+      _id: this._id,
+      expenseType: this.__t
+    }
+  });
+
+  if (!this.currency) {
+    console.error('🚨 Validation Error: Currency is required');
+    return next(new Error('Currency is required'));
+  }
+
+  if (this.totalAmount === undefined || this.totalAmount === null) {
+    console.error('🚨 Validation Error: Total amount is undefined or null', {
+      expense: this.toObject() // Convert to plain object for full inspection
+    });
+    return next(new Error('Total amount must be provided'));
+  }
+
+  if (!this.convertedAmountILS && this.currency !== 'ILS') {
+    try {
+      const conversionDate = this.date ? 
+        (this.date instanceof Date ? this.date : new Date(this.date)) : 
+        new Date();
+      
+      console.log(`🌐 Attempting to convert ${this.totalAmount} ${this.currency} to ILS`, {
+        date: conversionDate.toISOString().split('T')[0],
+      });
+      
+      const exchangeRate = await fetchOfficialExchangeRate(this.currency, conversionDate);
+
+      this.convertedAmountILS = this.totalAmount * exchangeRate;
+      this.conversionRate = exchangeRate;
+      this.conversionDate = conversionDate;
+
+      console.log('Currency Conversion:', {
+        originalAmount: this.totalAmount,
+        currency: this.currency,
+        exchangeRate: exchangeRate,
+        convertedAmount: this.convertedAmountILS
+      });
+    } catch (error) {
+      console.error('🚨 Currency Conversion Error:', {
+        message: error.message,
+        stack: error.stack,
+        details: error.response ? error.response.data : 'No additional details'
+      });
+      
+      const fallbackRate = 3.7; // USD to ILS
+      this.convertedAmountILS = this.totalAmount * fallbackRate;
+      this.conversionRate = fallbackRate;
+      
+      console.warn('⚠️ Fallback Conversion Used:', {
+        originalAmount: this.totalAmount,
+        originalCurrency: this.currency,
+        convertedAmount: this.convertedAmountILS,
+        fallbackRate: this.conversionRate
+      });
+    }
+  } else if (this.currency === 'ILS') {
+    this.convertedAmountILS = this.totalAmount;
+    this.conversionRate = 1;
+    
+    console.log('💡 Expense already in ILS, no conversion needed');
+  }
+  
+  console.log('Final Expense Details:', {
+    currency: this.currency,
+    totalAmount: this.totalAmount,
+    convertedAmountILS: this.convertedAmountILS,
+    conversionRate: this.conversionRate
+  });
+  
   next();
 });
 

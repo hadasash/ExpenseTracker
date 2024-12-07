@@ -391,6 +391,7 @@ const addExpenseManually = async (req, res) => {
             intervalEndDate,
             manualTotalAmount,
             note,
+            currency = 'ILS'  // Default to ILS if not specified
         } = req.body;
 
         if (!date || !category || !subCategory || !providerName || manualTotalAmount <= 0) {
@@ -419,15 +420,24 @@ const addExpenseManually = async (req, res) => {
             providerName: providerName,
             manualInterval: manualInterval,
             intervalEndDate: intervalEnd,
-            manualTotalAmount: manualTotalAmount,
+            totalAmount: manualTotalAmount,
+            currency: currency,
             note: note || '',
-            currency: 'ILS',
             expenseType: 'manual',
         };
 
         // If no interval is specified, just save the single expense
         if (!manualInterval) {
             const newExpense = new ManualExpenseModel(baseExpenseData);
+            
+            // Perform currency conversion if needed
+            if (currency !== 'ILS') {
+                await newExpense.convertToILS();
+            } else {
+                newExpense.convertedAmountILS = manualTotalAmount;
+                newExpense.conversionRate = 1;
+            }
+            
             await newExpense.save();
             return res.status(201).json({ message: 'Expense added successfully', expense: newExpense });
         }
@@ -443,6 +453,15 @@ const addExpenseManually = async (req, res) => {
             };
 
             const newExpense = new ManualExpenseModel(expenseData);
+            
+            // Perform currency conversion if needed
+            if (currency !== 'ILS') {
+                await newExpense.convertToILS();
+            } else {
+                newExpense.convertedAmountILS = manualTotalAmount;
+                newExpense.conversionRate = 1;
+            }
+            
             await newExpense.save();
             expenses.push(newExpense);
 

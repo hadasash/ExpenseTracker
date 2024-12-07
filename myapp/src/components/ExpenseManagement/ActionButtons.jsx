@@ -13,8 +13,9 @@ const handleDownload = (expenses, selectedMonth, year) => {
     Subcategory: expense.subCategory,
     Provider: expense.providerName || expense.employeeName || t('categoryDetails.unknown'),
     ID: expense.expenseType === 'manual' ? '' : expense.invoiceId || expense.salarySlipId || t('categoryDetails.unknown'),
-    Amount: expense.totalAmount.toLocaleString(),
-    Currency: expense.currency,
+    'Original Amount': `${expense.totalAmount.toLocaleString()} ${expense.currency}`,
+    'Converted Amount (ILS)': `₪${(expense.convertedAmountILS || expense.totalAmount).toLocaleString()}`,
+    'Conversion Rate': expense.conversionRate || 1
   }));
 
   // Create a worksheet and workbook

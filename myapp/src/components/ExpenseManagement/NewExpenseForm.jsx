@@ -125,7 +125,6 @@ const ManualExpenseForm = () => {
         maxWidth: 600,
         margin: 'auto',
         padding: 2,
-        boxShadow: 3,
         borderRadius: 2,
         background: 'white',
         height: '100vh',

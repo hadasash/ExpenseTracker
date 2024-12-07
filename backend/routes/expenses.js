@@ -8,10 +8,12 @@ const upload = multer({ storage }).array('additionalFile');
 
 router.post('/processExpenses', upload, expenseController.processExpenses);
 
-router.delete('/deleteExpense/:expenseId', expenseController.deleteExpense);
+router.delete('/delete/:expenseId', expenseController.deleteExpense);
 
 router.get('/expenses', expenseController.getExpenses);
 
 router.post('/addExpenseManually', expenseController.addExpenseManually);
+
+router.patch('/:id', expenseController.updateExpense);
 
 module.exports = router;

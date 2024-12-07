@@ -1,15 +1,17 @@
 // export default FileUpload;
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Box, Button, Typography, Paper, IconButton, Snackbar, Alert, LinearProgress } from '@mui/material';
+import { Box, Button, Typography, Paper, IconButton, LinearProgress } from '@mui/material';
 import { CloudUpload, Delete, InsertDriveFile } from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
+import { useSnackbar } from '../SharedSnackbar';
+import { useTranslation } from 'react-i18next';
 
 const FileUpload = () => {
   const [additionalFiles, setAdditionalFiles] = useState([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  const { openSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   // פונקציה לעיבוד קבצים שנגררו
   const onDrop = (acceptedFiles) => {
@@ -37,8 +39,6 @@ const FileUpload = () => {
     additionalFiles.forEach((file) => formData.append("additionalFile", file));
 
     try {
-      setError('');
-      setSuccess(false);
       setIsAnalyzing(true);
 
       const response = await axios.post("http://127.0.0.1:3000/expenses/processExpenses", formData, {
@@ -46,18 +46,14 @@ const FileUpload = () => {
       });
 
       console.log('Server Response:', response.data);
-      setSuccess(true);
+      openSnackbar(t('fileUpload.success'), 'success');
+      setAdditionalFiles([]); // Clear files after success
     } catch (err) {
       console.error('Error during file upload:', err);
-      setError('אירעה שגיאה בעת עיבוד הקבצים. אנא נסה שוב.');
+      openSnackbar(t('fileUpload.error'), 'error');
     } finally {
       setIsAnalyzing(false);
     }
-  };
-
-  const handleSuccessClose = () => {
-    setSuccess(false);
-    setAdditionalFiles([]); // Clear files after success message
   };
 
   return (
@@ -97,7 +93,6 @@ const FileUpload = () => {
               mt: 1,
               backgroundColor: '#f9f9f9',
               borderRadius: 1,
-              boxShadow: 2,
               transition: 'all 0.3s ease',
               '&:hover': { boxShadow: 4 },
             }}
@@ -123,18 +118,6 @@ const FileUpload = () => {
       >
         {isAnalyzing ? 'מעבד...' : 'התחל ניתוח'}
       </Button>
-
-      <Snackbar open={success} autoHideDuration={3000} onClose={handleSuccessClose}>
-        <Alert onClose={handleSuccessClose} severity="success" variant="filled">
-          הקבצים עובדו בהצלחה!
-        </Alert>
-      </Snackbar>
-
-      <Snackbar open={Boolean(error)} autoHideDuration={6000} onClose={() => setError('')}>
-        <Alert onClose={() => setError('')} severity="error" variant="filled">
-          {error}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };

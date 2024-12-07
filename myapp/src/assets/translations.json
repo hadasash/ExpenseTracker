@@ -1,7 +1,6 @@
 {
   "he": {
     "homepageTitle": "עמוד הבית",
-    "uploadButton": "העלה קבצים",
     "welcomeMessage": "ברוך הבא",
     "expenseBreakdown": "התפלגות הוצאות לפי קטגוריות",
     "graphTitle":"התפלגות הוצאות לפי תת קטגוריה" , 
@@ -30,13 +29,17 @@
       "lowestExpense": "הוצאה נמוכה ביותר",
       "expenseDetails": "פירוט הוצאה",
       "date": "תאריך",
-      "provider": "ספק",
-      "expenseNumber": "מספר הוצאה",
+      "type": "סוג",
+      "provider": "ספק/עובד",
+      "expenseNumber": "מספר חשבונית",
       "amount": "סכום",
       "status": "סטטוס",
       "paid": "שולם",
       "expenseType": "סוג הוצאה",
       "expenseId": "קוד זיהוי הוצאה",
+      "subcategory": "תת-קטגוריה",
+      "actions": "פעולות",
+      "downloadExpenses": "הורדת הוצאות",
       "categories": {
         "category": "קטגוריה",
         "subCategory": "תת קטגוריה",
@@ -54,15 +57,30 @@
         "rentAndMaintenance": "שכירות ותחזוקה",
         "postageAndCommunications": "דואר ותקשורת",
         "officeAndOther": "משרד ואחר"
-      }
+      },
+      "deleteExpense": "מחק הוצאה",
+      "confirmDelete": "אישור מחיקה",
+      "deleteConfirmationText": "האם אתה בטוח שברצונך למחוק את ההוצאה של ₪{{amount}} מ-{{provider}}?",
+      "expenseDeleted": "ההוצאה נמחקה בהצלחה",
+      "deleteError": "מחיקת ההוצאה נכשלה",
+      "fetchError": "טעינת ההוצאות העדכניות נכשלה",
+      "selectSubcategory": "אנא בחר תת-קטגוריה",
+      "subcategoryUpdated": "תת-קטגוריה עודכנה בהצלחה",
+      "updateError": "שגיאה בעדכון תת-קטגוריה",
+      "networkError": "בעיית התחברות לשרת. אנא בדוק את החיבור שלך"
+    },
+    "common": {
+      "cancel": "ביטול",
+      "delete": "מחיקה"
     },
     "navbar": {
-      "fileUpload": "העלאת הוצאות",
+      "home": "דף הבית",
+      "fileUpload": "העלאת קבצים",
       "expenseManagement": "ניהול הוצאות"
     },
-    "tooltip":{
-      "amount":"סכום ",
-      "percentage":"אחוז"
+    "tooltip": {
+      "amount": "סכום ",
+      "percentage": "אחוז"
     },
     "loading": "טוען...",
     "noData": "אין נתונים",
@@ -76,11 +94,31 @@
     "monthly": "חודשי",
     "yearly": "שנתי",
     "repeatUntil": "עד לתאריך",
-    "expenseAddedSuccessfully": "הוצאה נוספה בהצלחה"
+    "expenseAddedSuccessfully": "הוצאה נוספה בהצלחה",
+    "expenseTypes": {
+      "invoice": "חשבונית",
+      "salarySlip": "תלוש משכורת", 
+      "manual": "הזנה ידנית"
+    },
+    "homePage": {
+      "welcome": "ברוכים הבאים למערכת ניהול הוצאות",
+      "welcomeSubtitle": "נהל את ההוצאות שלך בקלות ובצורה חכמה",
+      "quickActions": "פעולות מהירות",
+      "monthlyExpenses": "הוצאות חודשיות",
+      "manageExpenses": "ניהול הוצאות",
+      "manageExpensesDescription": "צפה, סנן וערוך את ההוצאות שלך בקלות",
+      "uploadDocument": "העלאת מסמך",
+      "uploadDocumentDescription": "העלה קבלות, חשבוניות ומסמכים פיננסיים",
+      "reports": "דוחות",
+      "reportsDescription": "הפק דוחות מפורטים וניתוחי הוצאות"
+    },
+    "dashboard": {
+      "welcome": "ברוכים הבאים ללוח הבקרה",
+      "welcomeSubtitle": "קבל תובנות וסקירה כוללת של ההוצאות שלך"
+    }
   },
   "en": {
     "homepageTitle": "Home Page",
-    "uploadButton": "Upload Files",
     "welcomeMessage": "Welcome",
     "expenseBreakdown": "Expense Breakdown by Category",
     "expenseManager": "Expense Manager",
@@ -108,11 +146,17 @@
       "lowestExpense": "Lowest Expense",
       "expenseDetails": "Expense Details",
       "date": "Date",
+      "type": "Type",
       "provider": "Provider",
       "expenseNumber": "Expense Number",
       "amount": "Amount",
       "status": "Status",
       "paid": "Paid",
+      "expenseType": "Expense Type",
+      "expenseId": "Expense ID",
+      "subcategory": "Subcategory",
+      "actions": "Actions",
+      "downloadExpenses": "Download Expenses",
       "categories": {
         "category": "Category",
         "subCategory": "Subcategory",
@@ -130,20 +174,35 @@
         "rentAndMaintenance": "Rent and Maintenance",
         "postageAndCommunications": "Postage and Communications",
         "officeAndOther": "Office and Other"
-      }
+      },
+      "deleteExpense": "Delete Expense",
+      "confirmDelete": "Confirm Deletion",
+      "deleteConfirmationText": "Are you sure you want to delete this expense of ₪{{amount}} from {{provider}}?",
+      "expenseDeleted": "Expense successfully deleted",
+      "deleteError": "Failed to delete expense",
+      "fetchError": "Failed to fetch updated expenses",
+      "selectSubcategory": "Please select a subcategory",
+      "subcategoryUpdated": "Subcategory updated successfully", 
+      "updateError": "Error updating subcategory",
+      "networkError": "Network connection issue. Please check your connection"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "delete": "Delete"
     },
     "navbar": {
-      "fileUpload": "Upload Expenses",
-      "expenseManagement": "Manage Expenses"
+      "home": "Home",
+      "fileUpload": "File Upload",
+      "expenseManagement": "Expense Management"
     },
-    "tooltip":{
-      "amount":"Amount",
-      "percentage":"Percentage"
+    "tooltip": {
+      "amount": "Amount",
+      "percentage": "Percentage"
     },
     "loading": "Loading...",
     "noData": "No Data",
     "monthlySummaryTitle": "Monthly Expense Summary",
-    "graphTitle":"Expense Distribution by Subcategory",
+    "graphTitle": "Expense Distribution by Subcategory",
     "NoExpensesRecordedFor": "No expenses recorded for",
     "exportMonthlyReport": "Export Monthly Report",
     "addNewExpense": "Add New Expense",
@@ -153,6 +212,27 @@
     "monthly": "Monthly",
     "yearly": "Yearly",
     "repeatUntil": "Repeat Until",
-    "expenseAddedSuccessfully": "Expense Added Successfully"
+    "expenseAddedSuccessfully": "Expense Added Successfully",
+    "expenseTypes": {
+      "invoice": "Invoice",
+      "salarySlip": "Salary Slip",
+      "manual": "Manual Entry"
+    },
+    "homePage": {
+      "welcome": "Welcome to Expense Management",
+      "welcomeSubtitle": "Manage your expenses easily and smartly",
+      "quickActions": "Quick Actions",
+      "monthlyExpenses": "Monthly Expenses",
+      "manageExpenses": "Manage Expenses",
+      "manageExpensesDescription": "View, filter, and edit your expenses effortlessly",
+      "uploadDocument": "Upload Document",
+      "uploadDocumentDescription": "Upload receipts, invoices, and financial documents",
+      "reports": "Reports",
+      "reportsDescription": "Generate detailed expense reports and analysis"
+    },
+    "dashboard": {
+      "welcome": "Welcome to Dashboard",
+      "welcomeSubtitle": "Get insights and a comprehensive overview of your expenses"
+    }
   }
 }

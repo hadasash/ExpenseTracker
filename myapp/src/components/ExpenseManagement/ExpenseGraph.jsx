@@ -23,22 +23,20 @@ const CustomTooltip = ({ active, payload, t }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <Box
+      <Paper 
+        elevation={3}
         sx={{
-          bgcolor: 'background.paper',
-          p: 1.5,
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 1,
-          boxShadow: 1,
+          p: 2,
+          backgroundColor: 'white',
+          borderRadius: 2,
         }}
       >
-        <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
           {t(`categoryDetails.categories.${data.name}`)}
         </Typography>
         <Typography variant="body2">{t('tooltip.amount')}: ₪{data.value.toLocaleString()}</Typography>
         <Typography variant="body2">{t('tooltip.percentage')}: {data.percentage}%</Typography>
-      </Box>
+      </Paper>
     );
   }
   return null;
@@ -112,7 +110,16 @@ const ExpenseGraph = ({ expenses, loading }) => {
 
   if (loading) {
     return (
-      <Paper elevation={3} sx={{ p: 3 }}>
+      <Paper 
+        elevation={3}
+        sx={{
+          p: 3,
+          backgroundColor: 'white',
+          borderRadius: 2,
+          height: 400,
+          width: '100%'
+        }}
+      >
         <Typography variant="h6" gutterBottom>
           {t('loading')}
         </Typography>
@@ -125,7 +132,16 @@ const ExpenseGraph = ({ expenses, loading }) => {
 
   if (!expenses || expenses.length === 0) {
     return (
-      <Paper elevation={3} sx={{ p: 3 }}>
+      <Paper 
+        elevation={3}
+        sx={{
+          p: 3,
+          backgroundColor: 'white',
+          borderRadius: 2,
+          height: 400,
+          width: '100%'
+        }}
+      >
         <Typography variant="h6" color="textSecondary" sx={{ textAlign: 'center' }}>
           {t('noData')}
         </Typography>

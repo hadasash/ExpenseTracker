@@ -238,15 +238,128 @@ const saveUploadedFile = (file) => {
 };
 
 const deleteExpense = async (req, res) => {
-    const { _id } = req.params;
+    const { expenseId } = req.params;
+    
+    console.log('Received delete request for expense ID:', expenseId);
+    console.log('Request params:', req.params);
+    console.log('Request body:', req.body);
+    
     try {
-        res.status(204).send();
+        // Attempt to delete from all possible expense models
+        const models = [
+            { name: 'InvoiceExpenseModel', model: InvoiceExpenseModel },
+            { name: 'SalarySlipExpenseModel', model: SalarySlipExpenseModel },
+            { name: 'ManualExpenseModel', model: ManualExpenseModel },
+            { name: 'BaseExpenseModel', model: BaseExpenseModel }
+        ];
+
+        let deletedExpense = null;
+        for (const { name, model } of models) {
+            console.log(`Attempting to delete from ${name} with ID: ${expenseId}`);
+            
+            try {
+                // Try finding the document first to log its details
+                const foundDocument = await model.findById(expenseId);
+                console.log(`Found document in ${name}:`, foundDocument);
+
+                if (foundDocument) {
+                    deletedExpense = await model.findByIdAndDelete(expenseId);
+                    
+                    if (deletedExpense) {
+                        console.log(`Successfully deleted expense from ${name}`);
+                        break;
+                    }
+                }
+            } catch (modelError) {
+                console.error(`Error deleting from ${name}:`, modelError);
+            }
+        }
+
+        if (!deletedExpense) {
+            console.log(`No expense found with ID: ${expenseId} in any model`);
+            return res.status(404).json({ 
+                message: 'Expense not found', 
+                expenseId: expenseId,
+                searchedModels: models.map(m => m.name)
+            });
+        }
+
+        console.log(`Expense ${expenseId} deleted successfully`);
+        res.status(200).json({ 
+            message: 'Expense deleted successfully', 
+            deletedExpense: deletedExpense 
+        });
     } catch (error) {
-        console.error('Error deleting expense:', error, _id);
-        res.status(500).json({ message: 'Error deleting expense' });
+        console.error('Unexpected error deleting expense:', error);
+        res.status(500).json({ 
+            message: 'Error deleting expense', 
+            error: error.message,
+            stack: error.stack
+        });
     }
 };
 
+const updateExpense = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+
+        // Validate input
+        if (!id) {
+            return res.status(400).json({ 
+                message: 'Expense ID is required',
+                success: false 
+            });
+        }
+
+        // Find and update the expense
+        const updatedExpense = await BaseExpenseModel.findByIdAndUpdate(
+            id, 
+            { 
+                ...updateData,
+                updatedAt: new Date() 
+            }, 
+            { 
+                new: true,  // Return the updated document
+                runValidators: true  // Run model validation
+            }
+        );
+
+        // Check if expense was found and updated
+        if (!updatedExpense) {
+            return res.status(404).json({ 
+                message: 'Expense not found',
+                success: false 
+            });
+        }
+
+        // Respond with the updated expense
+        res.status(200).json({
+            message: 'Expense updated successfully',
+            success: true,
+            expense: updatedExpense
+        });
+
+    } catch (error) {
+        console.error('Error updating expense:', error);
+        
+        // Handle specific mongoose validation errors
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({
+                message: 'Invalid expense update',
+                success: false,
+                errors: error.errors
+            });
+        }
+
+        // Generic server error
+        res.status(500).json({ 
+            message: 'Server error updating expense',
+            success: false,
+            error: error.message 
+        });
+    }
+};
 
 const cleanProviderName = (providerName) => {
     return providerName
@@ -357,4 +470,5 @@ module.exports = {
     addExpenseManually,
     deleteExpense,
     getExpenses,
+    updateExpense,
 };

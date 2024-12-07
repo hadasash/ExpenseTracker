@@ -507,8 +507,6 @@ const CategoryDetailsPage = () => {
                         px: 1,
                         py: 0.5,
                         borderRadius: 1,
-                        backgroundColor: '#e6f2ff',
-                        color: '#1a73e8',
                         textAlign: 'right'
                       }}
                     >

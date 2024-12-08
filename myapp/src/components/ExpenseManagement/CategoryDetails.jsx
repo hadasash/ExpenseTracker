@@ -37,7 +37,7 @@ import {
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { categorySubcategoryMap } from '../../constants/categoryMap';
-import { apiService } from '../../services/apiService';
+import  apiService  from '../../services/apiService';
 import * as XLSX from 'xlsx';
 import { useSnackbar } from '../SharedSnackbar';
 

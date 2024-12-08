@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:3000';
 
-export const apiService = {
+export default  {
   async getExpensesByDateRange(startDate, endDate) {
 
     try {

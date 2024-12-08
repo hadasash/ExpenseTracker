@@ -14,7 +14,7 @@ import ExpenseSummary from './ExpenseSummary';
 import ExpenseGraph from './ExpenseGraph';
 import CategoryBreakdown from './CategoryBreakdown';
 import ActionButtons from './ActionButtons';
-import { apiService } from '../../services/apiService';
+import  apiService  from '../../services/apiService';
 import { useTranslation } from 'react-i18next';
 
 const ExpenseManagement = () => {

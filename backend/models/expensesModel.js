@@ -358,14 +358,6 @@ baseExpenseSchema.pre('validate', function(next) {
 });
 
 baseExpenseSchema.pre('save', async function(next) {
-  if (this.__t === 'InvoiceExpense' && this.invoiceTotal && !this.totalAmount) {
-    console.log('📝 Setting totalAmount from invoiceTotal for invoice expense', {
-      invoiceTotal: this.invoiceTotal,
-      currency: this.currency
-    });
-    this.totalAmount = this.invoiceTotal;
-  }
-
   console.log('🔄 Pre-save hook started for expense');
   console.log('Original Expense Details:', {
     currency: this.currency,
@@ -380,95 +372,47 @@ baseExpenseSchema.pre('save', async function(next) {
     }
   });
 
-  if (!this.currency) {
-    console.error('🚨 Validation Error: Currency is required');
-    return next(new Error('Currency is required'));
+  // Set totalAmount based on expense type
+  if (this.__t === 'InvoiceExpense' && this.invoiceTotal) {
+    this.totalAmount = this.invoiceTotal;
+  } else if (this.__t === 'SalarySlipExpense' && this.grossSalary) {
+    this.totalAmount = this.grossSalary;
+  } else if (this.__t === 'ManualExpense' && this.manualTotalAmount) {
+    this.totalAmount = this.manualTotalAmount;
   }
 
-  if (this.totalAmount === undefined || this.totalAmount === null) {
-    console.error('🚨 Validation Error: Total amount is undefined or null', {
-      expense: this.toObject() // Convert to plain object for full inspection
+  // Validate totalAmount
+  if (!this.totalAmount && this.totalAmount !== 0) {
+    console.log('🚨 Validation Error: Total amount is undefined or null', {
+      expense: this.toObject()
     });
     return next(new Error('Total amount must be provided'));
   }
 
-  if (!this.convertedAmountILS && this.currency !== 'ILS') {
+  // Convert to ILS if needed
+  if (this.currency !== 'ILS') {
     try {
-      const conversionDate = this.date ? 
-        (this.date instanceof Date ? this.date : new Date(this.date)) : 
-        new Date();
-      
-      console.log(`🌐 Attempting to convert ${this.totalAmount} ${this.currency} to ILS`, {
-        date: conversionDate.toISOString().split('T')[0],
-      });
-      
-      const exchangeRate = await fetchOfficialExchangeRate(this.currency, conversionDate);
-
-      this.convertedAmountILS = this.totalAmount * exchangeRate;
-      this.conversionRate = exchangeRate;
-      this.conversionDate = conversionDate;
-
-      console.log('Currency Conversion:', {
-        originalAmount: this.totalAmount,
-        currency: this.currency,
-        exchangeRate: exchangeRate,
-        convertedAmount: this.convertedAmountILS
-      });
+      const rate = await fetchOfficialExchangeRate(this.currency, this.date);
+      this.convertedAmountILS = this.totalAmount * rate;
     } catch (error) {
-      console.error('🚨 Currency Conversion Error:', {
-        message: error.message,
-        stack: error.stack,
-        details: error.response ? error.response.data : 'No additional details'
-      });
-      
-      const fallbackRate = 3.7; // USD to ILS
-      this.convertedAmountILS = this.totalAmount * fallbackRate;
-      this.conversionRate = fallbackRate;
-      
-      console.warn('⚠️ Fallback Conversion Used:', {
-        originalAmount: this.totalAmount,
-        originalCurrency: this.currency,
-        convertedAmount: this.convertedAmountILS,
-        fallbackRate: this.conversionRate
-      });
-    }
-  } else if (this.currency === 'ILS') {
-    this.convertedAmountILS = this.totalAmount;
-    this.conversionRate = 1;
-    
-    console.log('💡 Expense already in ILS, no conversion needed');
-  }
-  
-  console.log('Final Expense Details:', {
-    currency: this.currency,
-    totalAmount: this.totalAmount,
-    convertedAmountILS: this.convertedAmountILS,
-    conversionRate: this.conversionRate
-  });
-  
-  next();
-});
-
-baseExpenseSchema.pre('save', function(next) {
-  if (this.expenseType === 'invoice') {
-    if (this.invoiceTotal) {
-      this.totalAmount = this.invoiceTotal;
-    } else {
-      return next(new Error('Invoice total is required for invoice expense type'));
-    }
-  } else if (this.expenseType === 'salarySlip') {
-    if (this.grossSalary) {
-      this.totalAmount = this.grossSalary;
-    } else {
-      return next(new Error('Gross salary amount is required for salary slip expense type'));
-    }
-  } else if (this.expenseType === 'manual') {
-    if (this.manualTotalAmount) {
-      this.totalAmount = this.manualTotalAmount;
+      console.error('Error converting to ILS:', error);
+      return next(error);
     }
   } else {
-    return next(new Error('Invalid expense type'));
+    this.convertedAmountILS = this.totalAmount;
   }
+
+  // Set timestamps
+  if (this.isNew) {
+    this.createdAt = new Date();
+  }
+  this.updatedAt = new Date();
+
+  console.log('✅ Pre-save hook completed successfully:', {
+    finalAmount: this.totalAmount,
+    finalAmountILS: this.convertedAmountILS
+  });
+
   next();
 });
 

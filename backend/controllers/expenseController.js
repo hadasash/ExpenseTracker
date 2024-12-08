@@ -3,6 +3,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const path = require('path');
 const fs = require('fs');
 const { InvoiceExpenseModel, SalarySlipExpenseModel, ManualExpenseModel, BaseExpenseModel } = require("../models/expensesModel");
+const ExpenseService = require('../services/expenseService'); // Import the ExpenseService
 
 const getExpenses = async (req, res) => {
     const { startDate, endDate } = req.query;
@@ -305,36 +306,8 @@ const updateExpense = async (req, res) => {
         const { id } = req.params;
         const updateData = req.body;
 
-        // Validate input
-        if (!id) {
-            return res.status(400).json({ 
-                message: 'Expense ID is required',
-                success: false 
-            });
-        }
+        const updatedExpense = await ExpenseService.updateExpense(id, updateData);
 
-        // Find and update the expense
-        const updatedExpense = await BaseExpenseModel.findByIdAndUpdate(
-            id, 
-            { 
-                ...updateData,
-                updatedAt: new Date() 
-            }, 
-            { 
-                new: true,  // Return the updated document
-                runValidators: true  // Run model validation
-            }
-        );
-
-        // Check if expense was found and updated
-        if (!updatedExpense) {
-            return res.status(404).json({ 
-                message: 'Expense not found',
-                success: false 
-            });
-        }
-
-        // Respond with the updated expense
         res.status(200).json({
             message: 'Expense updated successfully',
             success: true,
@@ -350,6 +323,22 @@ const updateExpense = async (req, res) => {
                 message: 'Invalid expense update',
                 success: false,
                 errors: error.errors
+            });
+        }
+
+        // Handle not found error
+        if (error.message === 'Expense not found') {
+            return res.status(404).json({
+                message: error.message,
+                success: false
+            });
+        }
+
+        // Handle missing ID error
+        if (error.message === 'Expense ID is required') {
+            return res.status(400).json({
+                message: error.message,
+                success: false
             });
         }
 

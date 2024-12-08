@@ -150,7 +150,7 @@ const ExpenseManagement = () => {
         currentYear: { totalAmount: 0, mainCategoryTotals: {}, subCategoryTotals: {}, monthlyTotals: new Array(12).fill(0) },
     });
 
-    const fetchYearCalculations = async (targetYear, targetMonth, isCurrentYear = false) => {
+    const fetchYearCalculations = async (targetYear, isCurrentYear = false) => {
         try {
             // Fetch expenses for the entire year
             const yearStartDate = new Date(targetYear, 0, 1).toISOString();
@@ -203,8 +203,10 @@ const ExpenseManagement = () => {
 
             setYearCalculations(yearCalculations);
 
-            const startDate = new Date(year, selectedMonth - 1, 1).toISOString();
-            const endDate = new Date(year, selectedMonth, 0).toISOString();
+            // const startDate = new Date(year, selectedMonth - 1, 1).toISOString();
+            // const endDate = new Date(year, selectedMonth, 0).toISOString();
+            const startDate = new Date(Date.UTC(year, selectedMonth - 1, 1)).toISOString();
+            const endDate = new Date(Date.UTC(year, selectedMonth, 0, 23, 59, 59)).toISOString();
 
             console.group('Fetching Expenses');
             console.log('Start Date:', startDate);

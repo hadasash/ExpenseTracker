@@ -24,16 +24,14 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import {
   Download as DownloadIcon,
   Delete as DeleteIcon,
   Receipt as ReceiptIcon,
   Edit as EditIcon,
-  Save as SaveIcon,
-  Cancel as CancelIcon
+  Done as DoneIcon,
+  Close as CloseIcon
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { categorySubcategoryMap } from '../../constants/categoryMap';
@@ -44,9 +42,7 @@ import { useSnackbar } from '../SharedSnackbar';
 const CategoryDetailsPage = () => {
   const { year, month } = useParams();
   const location = useLocation();
-  const navigate = useNavigate();
   const { t } = useTranslation();
-  const theme = useTheme();
   const { openSnackbar } = useSnackbar();
 
   const [page, setPage] = useState(0);
@@ -211,14 +207,14 @@ const CategoryDetailsPage = () => {
                 color="primary" 
                 onClick={() => handleUpdateSubCategory(expense)}
               >
-                <SaveIcon fontSize="small" />
+                <DoneIcon fontSize="small" />
               </IconButton>
               <IconButton 
-                size="small" 
-                color="secondary" 
+                size="small"
+                color="primary"
                 onClick={() => setEditingExpenseId(null)}
               >
-                <CancelIcon fontSize="small" />
+                <CloseIcon fontSize="small" />
               </IconButton>
             </Box>
           </Box>
@@ -252,7 +248,7 @@ const CategoryDetailsPage = () => {
               textAlign: 'right'
             }}
           >
-            {expense.subCategory || t('categoryDetails.unknown')}
+            {subCategoryLabel}
           </Typography>
           <IconButton 
             size="small"

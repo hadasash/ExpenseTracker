@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
     Container, 
@@ -259,6 +260,16 @@ const ExpenseManagement = () => {
                 yearCalculations={yearCalculations}
             />
 
+            {/* Action Buttons - Moved to top */}
+            <Box mb={4} mt={2}>
+                <ActionButtons 
+                    expenses={expenses}
+                    selectedMonth={selectedMonth}
+                    year={year}
+                    onUpload={apiService.processExpense} 
+                />
+            </Box>
+
             {/* Error Message */}
             {error && (
                 <Alert severity="error" sx={{ mb: 3, borderRadius: '8px', backgroundColor: '#f8d7da', color: '#721c24' }}>
@@ -315,16 +326,6 @@ const ExpenseManagement = () => {
                     </Grid>
                 </Grid>
             )}
-
-            {/* Action Buttons */}
-            <Box mt={4} display="flex" justifyContent="flex-end">
-                <ActionButtons 
-                    expenses={expenses}
-                    selectedMonth={selectedMonth}
-                    year={year}
-                    onUpload={apiService.processExpense} 
-                />
-            </Box>
         </Container>
     );
 };

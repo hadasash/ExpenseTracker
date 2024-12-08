@@ -117,10 +117,19 @@ const YearTabs = ({
             <Tabs
                 value={selectedMonth || 1}
                 onChange={handleMonthChange}
-                centered
+                variant="scrollable"
+                scrollButtons={false}
                 sx={{
+                    '& .MuiTabs-flexContainer': {
+                        width: '100%',
+                        justifyContent: 'space-between',
+                    },
+                    '& .MuiTabs-scroller': {
+                        width: '100% !important',
+                    },
                     '& .MuiTab-root': {
-                        minWidth: 50,
+                        minWidth: '8.33%', // 100% / 12 months
+                        width: '8.33%',
                         fontSize: '0.875rem',
                         fontWeight: 500,
                         flexDirection: 'column',

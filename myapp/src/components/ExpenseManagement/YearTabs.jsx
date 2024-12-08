@@ -75,16 +75,7 @@ const YearTabs = ({
                     <ArrowForwardIosIcon sx={{ color: '#9e9e9e' }} />
                 </IconButton>
 
-                {/* Next Year */}
-                <Box sx={{ textAlign: 'center', minWidth: '120px' }}>
-                    <Typography
-                        variant="body2"
-                        sx={{ fontSize: '0.9rem', color: '#9e9e9e', cursor: 'pointer' }}
-                        onClick={() => handleYearChange(year + 1)}
-                    >
-                        {year + 1}
-                    </Typography>
-                </Box>
+                
 
                 {/* Spacer for alignment */}
                 <Box sx={{ minWidth: '20px' }} />
@@ -106,16 +97,7 @@ const YearTabs = ({
                 {/* Spacer for alignment */}
                 <Box sx={{ minWidth: '20px' }} />
 
-                {/* Previous Year */}
-                <Box sx={{ textAlign: 'center', minWidth: '120px' }}>
-                    <Typography
-                        variant="body2"
-                        sx={{ fontSize: '0.9rem', color: '#9e9e9e', cursor: 'pointer' }}
-                        onClick={() => handleYearChange(year - 1)}
-                    >
-                        {year - 1}
-                    </Typography>
-                </Box>
+               
 
                 {/* Right Arrow */}
                 <IconButton onClick={() => handleYearIncrement(1)} size="small">

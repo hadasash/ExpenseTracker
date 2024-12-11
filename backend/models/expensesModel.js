@@ -289,7 +289,7 @@ const invoiceSpecificFields = new mongoose.Schema({
   },
   invoiceNumber: {
     type: Number,
-    description: 'Invoice number'
+    description: 'Invoice number for the expense'
   },
   invoiceTotal: {
     type: Number,

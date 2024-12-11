@@ -117,6 +117,7 @@ const processExpenses = async (req, res) => {
             - Ensure that the date values are in the format "yyyy-mm-ddT00:00:00Z". When no day is provided, use the first day of the month.
             - Ensure all currency values are returned using ISO currency codes (e.g., use "USD" instead of "$", "ILS" instead of "₪").
             - Ensure date equals the invoice date or the salary slip date and not the range in which the expense was incurred.
+            - When the expense is in Hebrew, always extract the first valid number after "חשבונית מס" or "חשבונית מס מקור מס". 
             `;
         const generatedContent = await model.generateContent([prompt, ...imageParts]);
         const summary = generatedContent.response.text();

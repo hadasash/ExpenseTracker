@@ -6,7 +6,7 @@ const ExpenseSummary = ({ selectedMonth, totalAmount, year }) => {
   const { t } = useTranslation();
   const formattedAmount = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 3
+    maximumFractionDigits: 1
   }).format(totalAmount);
 
   return (

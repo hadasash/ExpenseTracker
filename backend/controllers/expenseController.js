@@ -25,7 +25,6 @@ const processExpenses = async (req, res) => {
     try {
         const googleApiKey = process.env.GOOGLE_AI_API_KEY;
         const genAI = new GoogleGenerativeAI(googleApiKey);
-        console.log("hello");
 
         const generationConfig = {
             temperature: 1,
@@ -145,7 +144,7 @@ const processExpenses = async (req, res) => {
 
                 const existingInvoice = await InvoiceExpenseModel.findOne({ invoiceId: uniqueInvoiceId });
                 if (existingInvoice) {
-                    return res.status(400).json({ message: 'Invoice already exists:', uniqueInvoiceId });
+                    return res.status(400).json({ message: 'Invoice already exists', uniqueInvoiceId });
                 }
 
                 const invoiceData = {
@@ -173,7 +172,7 @@ const processExpenses = async (req, res) => {
                 const existingSalarySlip = await SalarySlipExpenseModel.findOne({ salarySlipId: uniqueSalarySlipId });
                 
                 if (existingSalarySlip) {
-                    return res.status(400).json({ message: 'Salary slip already exists:', uniqueSalarySlipId });
+                    return res.status(400).json({ message: 'Salary slip already exists', uniqueSalarySlipId });
                 }
 
                 const salarySlipData = {

@@ -78,6 +78,12 @@
       "fileUpload": "העלאת קבצים",
       "expenseManagement": "ניהול הוצאות"
     },
+    "fileUpload": {
+      "success": "הקובצים הועלה בהצלחה",
+      "error": "שגיאה בהעלאת הקבצים",
+      "invoiceExists": "חשבונית כבר קיימת במערכת",
+      "salarySlipExists": "תלוש משכורת כבר קיים במערכת"
+    },
     "tooltip": {
       "amount": "סכום ",
       "percentage": "אחוז"
@@ -196,9 +202,14 @@
       "fileUpload": "File Upload",
       "expenseManagement": "Expense Management"
     },
+    "fileUpload": {
+      "success": "Files uploaded successfully",
+      "error": "Error uploading files",
+      "invoiceExists": "Invoice already exists in the system",
+      "salarySlipExists": "Salary slip already exists in the system"
+    },
     "tooltip": {
       "amount": "Amount",
-
       "percentage": "Percentage"
     },
     "loading": "Loading...",
@@ -296,6 +307,12 @@
       "fileUpload": "Cargar gastos",
       "expenseManagement": "Gestionar gastos"
     },
+    "fileUpload": {
+      "success": "Archivos cargados con éxito",
+      "error": "Error al cargar archivos",
+      "invoiceExists": "La factura ya existe en el sistema",
+      "salarySlipExists": "El recibo del sueldo ya existe en el sistema"
+    },
     "tooltip":{
       "amount":"Cantidad",
       "percentage":"Porcentaje"
@@ -315,6 +332,5 @@
     "yearly": "Anual",
     "repeatUntil": "Repetir hasta",
     "expenseAddedSuccessfully": "Gasto agregado con éxito"
- 
   }
 }

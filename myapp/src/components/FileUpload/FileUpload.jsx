@@ -37,24 +37,39 @@ const FileUpload = () => {
   const handleSubmit = async () => {
     const formData = new FormData();
     additionalFiles.forEach((file) => formData.append("additionalFile", file));
-
+  
     try {
       setIsAnalyzing(true);
-
+  
       const response = await axios.post("http://127.0.0.1:3000/expenses/processExpenses", formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-
+  
       console.log('Server Response:', response.data);
       openSnackbar(t('fileUpload.success'), 'success');
       setAdditionalFiles([]); // Clear files after success
     } catch (err) {
       console.error('Error during file upload:', err);
-      openSnackbar(t('fileUpload.error'), 'error');
+  
+      if (err.response && err.response.data) {
+        const { message } = err.response.data;
+  
+        if (message === 'Invoice already exists') {
+          const { uniqueInvoiceId } = err.response.data;
+          openSnackbar(`${t('fileUpload.invoiceExists')} ${uniqueInvoiceId}`, 'error');
+        } else if (message === 'Salary slip already exists') {
+          const { uniqueSalarySlipId } = err.response.data;
+          openSnackbar(`${t('fileUpload.salarySlipExists')} ${uniqueSalarySlipId}`, 'error');
+        } else {
+          openSnackbar(t('fileUpload.error'), 'error');
+        }
+      } else {
+        openSnackbar(t('fileUpload.error'), 'error');
+      }
     } finally {
       setIsAnalyzing(false);
     }
-  };
+  };   
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={2} p={4} sx={{ width: '80%', margin: '0 auto' }}>

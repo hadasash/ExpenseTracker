@@ -3,14 +3,14 @@
     "version": "1.0.0",
     "description": "Expense Tracker app",
     "scripts": {
-      "start": "node backend/app.js",
-      "heroku-postbuild": "cd myapp && npm install && npm run build",
-      "postinstall": "npm run heroku-postbuild"
+        "start": "node backend/app.js",
+        "heroku-postbuild": "cd myapp && npm install && npm run build",
+        "postinstall": "npm run heroku-postbuild"
     },
     "dependencies": {
+        "dotenv": "^16.4.7"
     },
     "engines": {
-      "node": "18.x"
+        "node": "18.x"
     }
-  }
-  
+}

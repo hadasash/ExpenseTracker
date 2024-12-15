@@ -51,6 +51,7 @@ async function connectToDatabase() {
   });
 
   const port = process.env.PORT || 3000;
+  console.log('App is running on port:', port);
 
   app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);

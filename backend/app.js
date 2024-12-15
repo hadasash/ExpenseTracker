@@ -1,6 +1,4 @@
-require('dotenv').config({
-  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
-});
+require('dotenv').config();
 
 console.log('Environment:', process.env.NODE_ENV);
 console.log('Mongo URI:', process.env.MONGODB_URI);

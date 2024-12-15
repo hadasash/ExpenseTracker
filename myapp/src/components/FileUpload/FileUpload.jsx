@@ -41,7 +41,7 @@ const FileUpload = () => {
     try {
       setIsAnalyzing(true);
   
-      const response = await axios.post("http://127.0.0.1:3000/expenses/processExpenses", formData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/expenses/processExpenses`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
   

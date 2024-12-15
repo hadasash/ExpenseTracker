@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 const { expenseCategoryEnum, expenseSubCategoryEnum } = require('../constants/enums');
 const collectionName = process.env.EXPENSES_COLLECTION || 'expenses';
+console.log('Using collection name:', collectionName);
 
 const categorySubcategoryMap = {
   [expenseCategoryEnum.COST_OF_REVENUES]: [

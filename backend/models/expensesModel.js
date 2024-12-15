@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const axios = require('axios');
 const { expenseCategoryEnum, expenseSubCategoryEnum } = require('../constants/enums');
+const collectionName = process.env.EXPENSES_COLLECTION || 'expenses';
 
 const categorySubcategoryMap = {
   [expenseCategoryEnum.COST_OF_REVENUES]: [
@@ -416,7 +417,7 @@ baseExpenseSchema.pre('save', async function(next) {
   next();
 });
 
-const BaseExpenseModel = mongoose.model('BaseExpense', baseExpenseSchema, 'expenses');
+const BaseExpenseModel = mongoose.model('BaseExpense', baseExpenseSchema, collectionName);
 const InvoiceExpenseModel = BaseExpenseModel.discriminator('InvoiceExpense', invoiceSpecificFields);
 const SalarySlipExpenseModel = BaseExpenseModel.discriminator('SalarySlipExpense', salarySlipSpecificFields);
 const ManualExpenseModel = BaseExpenseModel.discriminator('ManualExpense', manualExpenseSpecificFields);

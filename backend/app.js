@@ -1,6 +1,11 @@
 require('dotenv').config({
-  path: process.env.NODE_ENV === 'production' ? './.env.production' : './.env.development',
+  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
 });
+
+console.log('Environment:', process.env.NODE_ENV);
+console.log('Mongo URI:', process.env.MONGODB_URI);
+console.log('Database Name:', process.env.MONGODB_DB_NAME);
+console.log('Collection Name:', process.env.EXPENSES_COLLECTION);
 
 const express = require('express');
 const mongoose = require('mongoose');

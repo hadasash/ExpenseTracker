@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import YearTabs from './YearTabs';
 import ExpenseSummary from './ExpenseSummary';
-import ExpenseGraph from './ExpenseGraph';
+import ExpenseGraph from './Graph/ExpenseGraph';
 import CategoryBreakdown from './CategoryBreakdown';
 import ActionButtons from './ActionButtons';
 import  apiService  from '../../services/apiService';

@@ -4,28 +4,30 @@ import { Paper, Typography, Box, Skeleton, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 const subCategoryColors = {
-  // גוונים מגוונים
-  salariesAndRelated: '#0D47A1',       // כחול כהה מאוד
-  commissions: '#4A148C',             // סגול כהה
-  equipmentAndSoftware: '#1B5E20',    // ירוק כהה
-  officeExpenses: '#EF6C00',          // כתום כהה
-  vehicleMaintenance: '#006064',      // טורקיז כהה
-  depreciation: '#F9A825',            // צהוב זהוב
+  // גוונים של כחול כהה
+  salariesAndRelated: '#003366',    // כחול כהה עמוק
+  commissions: '#336699',           // כחול רגיל
+  equipmentAndSoftware: '#6699CC',  // כחול בהיר
 
-  // גוונים נוספים
-  managementServices: '#1565C0',      // כחול רגיל
-  professionalServices: '#424242',    // אפור כהה
-  advertising: '#C62828',             // אדום כהה
-  rentAndMaintenance: '#7B1FA2',      // סגול כהה
-  postageAndCommunications: '#2E7D32', // ירוק בינוני
-  officeAndOther: '#D84315',          // כתום כהה
+  // גוונים של אדום
+  officeExpenses: '#990000',        // אדום כהה
+  vehicleMaintenance: '#CC3333',    // אדום בינוני
+  depreciation: '#FF6666',          // אדום בהיר
+
+  // גוונים מנוגדים ומשלימים
+  managementServices: '#003300',    // ירוק כהה מאוד
+  professionalServices: '#FFCC00',  // צהוב זהוב
+  advertising: '#660066',           // סגול כהה
+  rentAndMaintenance: '#993399',    // סגול בהיר
+  postageAndCommunications: '#CC6600', // כתום כהה
+  officeAndOther: '#006666',        // טורקיז כהה
 };
 
 const CustomTooltip = ({ active, payload, t }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <Paper 
+      <Paper
         elevation={3}
         sx={{
           p: 2,
@@ -82,6 +84,25 @@ const CustomLegend = ({ payload, isRTL, t }) => (
     ))}
   </Box>
 );
+const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+  const RADIAN = Math.PI / 180;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="white"
+      textAnchor={x > cx ? 'start' : 'end'}
+      dominantBaseline="central"
+      fontSize="12"
+    >
+      {`${(percent * 100).toFixed(1)}%`}
+    </text>
+  );
+};
 
 const ExpenseGraph = ({ expenses, loading }) => {
   const { t, i18n } = useTranslation();
@@ -105,14 +126,14 @@ const ExpenseGraph = ({ expenses, loading }) => {
       .map(([category, value]) => ({
         name: category,
         value,
-        percentage: ((value / totalAmount) * 100).toFixed(1),
+        percentage: ((value / totalAmount) * 100).toFixed(2),
       }))
       .sort((a, b) => b.value - a.value);
   }, [expenses]);
 
   if (loading) {
     return (
-      <Paper 
+      <Paper
         elevation={3}
         sx={{
           p: 3,
@@ -134,7 +155,7 @@ const ExpenseGraph = ({ expenses, loading }) => {
 
   if (!expenses || expenses.length === 0) {
     return (
-      <Paper 
+      <Paper
         elevation={3}
         sx={{
           p: 3,
@@ -182,6 +203,7 @@ const ExpenseGraph = ({ expenses, loading }) => {
                 onMouseEnter={onPieEnter}
                 onMouseLeave={onPieLeave}
                 animationDuration={1000}
+                label={renderCustomizedLabel} // הוספת תווית מותאמת אישית
               >
                 {subCategoryData.map((entry, index) => (
                   <Cell
@@ -202,11 +224,11 @@ const ExpenseGraph = ({ expenses, loading }) => {
                 layout="vertical"
                 align="right"
                 verticalAlign="middle"
-                iconType="circle"  // Use circle icons for the legend
+                iconType="circle"
                 iconSize={12}
                 wrapperStyle={{
-                  padding: '0 16px', // Add some padding to move the legend to the right
-                  textAlign: isRTL ? 'right' : 'left', // Align text right or left based on language
+                  padding: '0 16px',
+                  textAlign: isRTL ? 'right' : 'left',
                 }}
               />
             </PieChart>

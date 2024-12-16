@@ -35,7 +35,7 @@ import {
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { categorySubcategoryMap } from '../../constants/categoryMap';
-import  apiService  from '../../services/apiService';
+import apiService from '../../services/apiService';
 import * as XLSX from 'xlsx';
 import { useSnackbar } from '../SharedSnackbar';
 
@@ -63,11 +63,17 @@ const CategoryDetailsPage = () => {
   const subCategoryObject = categories[mainCategory]?.find(sub => sub.value === subCategory);
   const subCategoryLabel = subCategoryObject?.label || t('categoryDetails.unknown');
 
-  const hebrewMonth = useMemo(() => 
+  const hebrewMonth = useMemo(() =>
     new Intl.DateTimeFormat('he-IL', { month: 'long' }).format(new Date(year, parseInt(month) - 1)),
     [year, month]
   );
-
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString('he-IL', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
   const expenseTypeDisplayNames = {
     'invoice': 'Invoice',
     'salarySlip': 'Salary Slip',
@@ -83,8 +89,8 @@ const CategoryDetailsPage = () => {
       console.log("Expenses from Management:", expensesFromManagement);
 
       // Filter expenses by main category and subcategory
-      const filteredExpenses = expensesFromManagement.filter(expense => 
-        expense.mainCategory === mainCategory && 
+      const filteredExpenses = expensesFromManagement.filter(expense =>
+        expense.mainCategory === mainCategory &&
         expense.subCategory === subCategory
       );
 
@@ -112,9 +118,9 @@ const CategoryDetailsPage = () => {
       });
 
       // Update the expenses list
-      const updatedExpenses = expenses.map(exp => 
-        exp._id === expenseId || exp.id === expenseId 
-          ? { ...exp, subCategory: editedSubCategory } 
+      const updatedExpenses = expenses.map(exp =>
+        exp._id === expenseId || exp.id === expenseId
+          ? { ...exp, subCategory: editedSubCategory }
           : exp
       );
 
@@ -142,24 +148,24 @@ const CategoryDetailsPage = () => {
     // If currently editing this expense
     if (editingExpenseId === expense._id || expense.id) {
       return (
-        <TableCell sx={{ 
-          maxWidth: 200, 
-          p: 1, 
+        <TableCell sx={{
+          maxWidth: 200,
+          p: 1,
           textAlign: 'right',
           '& > div': { justifyContent: 'flex-end' }
         }}>
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'flex-end',
               gap: 0.5,
               width: '100%'
             }}
           >
-            <FormControl 
-              size="small" 
-              sx={{ 
+            <FormControl
+              size="small"
+              sx={{
                 flex: 1,
                 '& .MuiOutlinedInput-root': {
                   height: 35,
@@ -180,7 +186,7 @@ const CategoryDetailsPage = () => {
                   return selectedSub ? selectedSub.label : t('categoryDetails.selectSubcategory');
                 }}
                 size="small"
-                sx={{ 
+                sx={{
                   textAlign: 'right',
                   '& .MuiSelect-select': {
                     textAlign: 'right'
@@ -188,10 +194,10 @@ const CategoryDetailsPage = () => {
                 }}
               >
                 {availableSubCategories.map((sub) => (
-                  <MenuItem 
-                    key={sub.value} 
+                  <MenuItem
+                    key={sub.value}
                     value={sub.value}
-                    sx={{ 
+                    sx={{
                       fontSize: '0.875rem',
                       justifyContent: 'flex-end'
                     }}
@@ -202,14 +208,14 @@ const CategoryDetailsPage = () => {
               </Select>
             </FormControl>
             <Box sx={{ display: 'flex', gap: 0.5, ml: 0.5 }}>
-              <IconButton 
-                size="small" 
-                color="primary" 
+              <IconButton
+                size="small"
+                color="primary"
                 onClick={() => handleUpdateSubCategory(expense)}
               >
                 <DoneIcon fontSize="small" />
               </IconButton>
-              <IconButton 
+              <IconButton
                 size="small"
                 color="primary"
                 onClick={() => setEditingExpenseId(null)}
@@ -224,23 +230,23 @@ const CategoryDetailsPage = () => {
 
     // Default display of subcategory
     return (
-      <TableCell sx={{ 
-        maxWidth: 150, 
-        p: 1, 
+      <TableCell sx={{
+        maxWidth: 150,
+        p: 1,
         textAlign: 'right',
         '& > div': { justifyContent: 'flex-end' }
       }}>
-        <Box 
-          sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
             justifyContent: 'flex-end',
             width: '100%'
           }}
         >
-          <Typography 
-            variant="body2" 
-            sx={{ 
+          <Typography
+            variant="body2"
+            sx={{
               flex: 1,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -250,13 +256,13 @@ const CategoryDetailsPage = () => {
           >
             {subCategoryLabel}
           </Typography>
-          <IconButton 
+          <IconButton
             size="small"
             onClick={() => {
               setEditingExpenseId(expense._id || expense.id);
               setEditedSubCategory(expense.subCategory);
             }}
-            sx={{ 
+            sx={{
               ml: 0.5,
               p: 0.5
             }}
@@ -297,7 +303,7 @@ const CategoryDetailsPage = () => {
 
   const handleDownload = () => {
     const worksheetData = expenses.map((expense) => ({
-      [t('categoryDetails.date')]: new Date(expense.date).toLocaleDateString(),
+      [t('categoryDetails.date')]: formatDate(expense.date),
       [t('categoryDetails.type')]: expenseTypeDisplayNames[expense.expenseType] || expense.expenseType,
       [t('categoryDetails.subcategory')]: expense.subCategory || t('categoryDetails.unknown'),
       [t('categoryDetails.provider')]: expense.providerName || expense.employeeName || t('categoryDetails.unknown'),
@@ -305,7 +311,7 @@ const CategoryDetailsPage = () => {
       [t('categoryDetails.originalAmount')]: `${expense.totalAmount.toLocaleString()} ${expense.currency}`,
       [t('categoryDetails.convertedAmount')]: `₪${(expense.convertedAmountILS || expense.totalAmount).toLocaleString()}`,
       [t('categoryDetails.conversionRate')]: expense.conversionRate || 1,
-      [t('categoryDetails.conversionDate')]: expense.date ? new Date(expense.date).toLocaleDateString() : t('categoryDetails.unknown')
+      [t('categoryDetails.conversionDate')]: expense.date ? formatDate(expense.date) : t('categoryDetails.unknown')
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
@@ -322,7 +328,7 @@ const CategoryDetailsPage = () => {
     try {
       const extractExpenseId = (expense) => {
         const possibleIdFields = ['_id', 'id', 'expenseId', 'invoiceId'];
-        
+
         for (const field of possibleIdFields) {
           if (expense[field]) {
             return expense[field];
@@ -342,7 +348,7 @@ const CategoryDetailsPage = () => {
       }
 
       await apiService.deleteExpense(expenseId);
-      
+
       await onExpensesUpdated();
 
       openSnackbar(t('categoryDetails.expenseDeleted'), 'success');
@@ -382,9 +388,9 @@ const CategoryDetailsPage = () => {
   };
 
   return (
-    <Box 
-      sx={{ 
-        p: { xs: 3, md: 6 }, 
+    <Box
+      sx={{
+        p: { xs: 3, md: 6 },
         minHeight: '100vh',
         backgroundColor: '#f0f4f8',
         display: 'flex',
@@ -402,19 +408,19 @@ const CategoryDetailsPage = () => {
           color: 'white'
         }}
       >
-        <Box 
-          sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             p: { xs: 2, md: 4 },
             color: 'white'
           }}
         >
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography 
-              variant="h4" 
-              sx={{ 
+            <Typography
+              variant="h4"
+              sx={{
                 fontWeight: 700,
                 letterSpacing: '0.5px',
                 color: 'white'
@@ -423,10 +429,10 @@ const CategoryDetailsPage = () => {
               {mainCategoryLabel}
             </Typography>
             {subCategory && (
-              <Chip 
-                label={t(`categoryDetails.categories.${subCategory}`, { defaultValue: subCategory })} 
+              <Chip
+                label={t(`categoryDetails.categories.${subCategory}`, { defaultValue: subCategory })}
                 color="default"
-                sx={{ 
+                sx={{
                   alignSelf: 'flex-start',
                   fontWeight: 600,
                   backgroundColor: '#f0f4f8',
@@ -441,9 +447,9 @@ const CategoryDetailsPage = () => {
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography 
-              variant="h6" 
-              sx={{ 
+            <Typography
+              variant="h6"
+              sx={{
                 color: 'white',
                 fontWeight: 600
               }}
@@ -451,10 +457,10 @@ const CategoryDetailsPage = () => {
               {hebrewMonth} {year}
             </Typography>
             <Tooltip title={t('categoryDetails.downloadExpenses')}>
-              <IconButton 
+              <IconButton
                 size="medium"
                 onClick={handleDownload}
-                sx={{ 
+                sx={{
                   color: 'white',
                   '&:hover': {
                     color: '#e74c3c'
@@ -478,7 +484,7 @@ const CategoryDetailsPage = () => {
         }}
       >
         <TableContainer>
-          <Table sx={{ 
+          <Table sx={{
             minWidth: 650,
             '& .MuiTableCell-root': {
               py: 2,
@@ -487,16 +493,16 @@ const CategoryDetailsPage = () => {
               textAlign: 'right'
             }
           }}>
-            <TableHead sx={{ 
+            <TableHead sx={{
               backgroundColor: '#4a90e2',
               color: 'white'
             }}>
               <TableRow>
                 {['date', 'type', 'subcategory', 'provider', 'amount', 'expenseNumber', 'actions'].map((header) => (
-                  <TableCell 
-                    key={header} 
-                    sx={{ 
-                      fontWeight: 700, 
+                  <TableCell
+                    key={header}
+                    sx={{
+                      fontWeight: 700,
                       color: 'white',
                       textTransform: 'uppercase',
                       letterSpacing: '1.5px',
@@ -513,8 +519,8 @@ const CategoryDetailsPage = () => {
                 ? expenses.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 : expenses
               ).map((expense, index) => (
-                <TableRow 
-                  key={index} 
+                <TableRow
+                  key={index}
                   hover
                   sx={{
                     '&:nth-of-type(even)': {
@@ -536,14 +542,13 @@ const CategoryDetailsPage = () => {
                         textAlign: 'right'
                       }}
                     >
-                      {new Date(expense.date).toLocaleDateString()}
-                    </Typography>
+                      {formatDate(expense.date)}                  </Typography>
                   </TableCell>
                   <TableCell>
-                    <Chip 
+                    <Chip
                       label={expenseTypeDisplayNames[expense.expenseType] || expense.expenseType}
                       size="small"
-                      sx={{ 
+                      sx={{
                         backgroundColor: '#50c878',
                         color: 'white',
                         fontWeight: 600,
@@ -567,7 +572,7 @@ const CategoryDetailsPage = () => {
                   </TableCell>
                   <TableCell align="center">
                     <Tooltip title={t('categoryDetails.deleteExpense')}>
-                      <IconButton 
+                      <IconButton
                         size="small"
                         onClick={() => openDeleteConfirmation(expense)}
                         sx={{
@@ -587,9 +592,9 @@ const CategoryDetailsPage = () => {
             </TableBody>
             <TableFooter>
               <TableRow>
-                <TableCell 
-                  colSpan={7} 
-                  sx={{ 
+                <TableCell
+                  colSpan={7}
+                  sx={{
                     backgroundColor: '#f0f4f8',
                     borderTop: '2px solid #4a90e2',
                     py: 2,
@@ -597,23 +602,23 @@ const CategoryDetailsPage = () => {
                     textAlign: 'right'
                   }}
                 >
-                  <Box 
-                    sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
                       alignItems: 'center'
                     }}
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <ReceiptIcon 
-                        sx={{ 
+                      <ReceiptIcon
+                        sx={{
                           color: '#4a90e2',
                           fontSize: 24
-                        }} 
+                        }}
                       />
-                      <Typography 
-                        variant="subtitle1" 
-                        sx={{ 
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
                           fontWeight: 600,
                           color: '#2c3e50',
                           textAlign: 'right'
@@ -622,9 +627,9 @@ const CategoryDetailsPage = () => {
                         {t('categoryDetails.totalExpenditure')}
                       </Typography>
                     </Box>
-                    <Typography 
-                      variant="h6" 
-                      sx={{ 
+                    <Typography
+                      variant="h6"
+                      sx={{
                         fontWeight: 700,
                         color: '#e74c3c',
                         textAlign: 'right'
@@ -668,18 +673,18 @@ const CategoryDetailsPage = () => {
           }
         }}
       >
-        <DialogTitle 
+        <DialogTitle
           id="delete-expense-dialog-title"
-          sx={{ 
-            backgroundColor: '#f0f4f8', 
+          sx={{
+            backgroundColor: '#f0f4f8',
             color: '#2c3e50',
-            fontWeight: 700 
+            fontWeight: 700
           }}
         >
           {t('categoryDetails.confirmDelete')}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText 
+          <DialogContentText
             id="delete-expense-dialog-description"
             sx={{ color: '#4a5568' }}
           >
@@ -690,17 +695,17 @@ const CategoryDetailsPage = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button 
-            onClick={handleCloseConfirmDialog} 
+          <Button
+            onClick={handleCloseConfirmDialog}
             color="primary"
             variant="outlined"
             sx={{ borderRadius: 2 }}
           >
             {t('common.cancel')}
           </Button>
-          <Button 
-            onClick={handleDeleteExpense} 
-            color="error" 
+          <Button
+            onClick={handleDeleteExpense}
+            color="error"
             variant="contained"
             sx={{ borderRadius: 2 }}
             autoFocus

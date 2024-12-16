@@ -131,7 +131,7 @@ const FileUpload = () => {
         disabled={isAnalyzing || additionalFiles.length === 0}
         sx={{ mt: 2 }}
       >
-        {isAnalyzing ? t('loading') : t('startAnalysing')}
+        {isAnalyzing ? t('loading') : t('startAnalysis')}
       </Button>
     </Box>
   );

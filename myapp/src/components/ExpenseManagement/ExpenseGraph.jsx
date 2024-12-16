@@ -4,21 +4,21 @@ import { Paper, Typography, Box, Skeleton, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 const subCategoryColors = {
-  // קבוצה 1 - גוונים של כחול
-  salariesAndRelated: '#0D47A1',    // כחול כהה מאוד
-  commissions: '#90CAF9',           // כחול בהיר מאוד
-  equipmentAndSoftware: '#1565C0',  // כחול כהה
-  officeExpenses: '#42A5F5',        // כחול בהיר
-  vehicleMaintenance: '#1976D2',    // כחול רגיל
-  depreciation: '#64B5F6',          // כחול בהיר בינוני
+  // גוונים מגוונים
+  salariesAndRelated: '#0D47A1',       // כחול כהה מאוד
+  commissions: '#4A148C',             // סגול כהה
+  equipmentAndSoftware: '#1B5E20',    // ירוק כהה
+  officeExpenses: '#EF6C00',          // כתום כהה
+  vehicleMaintenance: '#006064',      // טורקיז כהה
+  depreciation: '#F9A825',            // צהוב זהוב
 
-  // קבוצה 2 - גוונים של אדום
-  managementServices: '#B71C1C',    // אדום כהה מאוד
-  professionalServices: '#EF9A9A',  // אדום בהיר מאוד
-  advertising: '#C62828',           // אדום כהה
-  rentAndMaintenance: '#EF5350',    // אדום בהיר
-  postageAndCommunications: '#D32F2F', // אדום רגיל
-  officeAndOther: '#E57373',        // אדום בהיר בינוני
+  // גוונים נוספים
+  managementServices: '#1565C0',      // כחול רגיל
+  professionalServices: '#424242',    // אפור כהה
+  advertising: '#C62828',             // אדום כהה
+  rentAndMaintenance: '#7B1FA2',      // סגול כהה
+  postageAndCommunications: '#2E7D32', // ירוק בינוני
+  officeAndOther: '#D84315',          // כתום כהה
 };
 
 const CustomTooltip = ({ active, payload, t }) => {

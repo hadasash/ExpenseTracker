@@ -13,16 +13,16 @@
 //     officeAndOther: '#006666',
 //   };
 export const subCategoryColors = {
-  salariesAndRelated: '#FF69B4',  // ורוד בוהק
-  commissions: '#00BFFF',         // כחול חשמלי
-  equipmentAndSoftware: '#32CD32',  // ירוק ליים
-  officeExpenses: '#FFD700',      // צהוב זהב
-  vehicleMaintenance: '#FF6347',  // אדום עז
-  depreciation: '#FF4500',        // כתום חזק
-  managementServices: '#8A2BE2',  // סגול כהה
-  professionalServices: '#FF1493', // ורוד חזק
-  advertising: '#FF6347',         // כתום אדום
-  rentAndMaintenance: '#00FF7F',  // ירוק טורקיז
-  postageAndCommunications: '#FF4500', // כתום חזק
-  officeAndOther: '#00CED1',      // טורקיז כהה
+  salariesAndRelated: '#FFB6C1',  // ורוד בהיר
+  commissions: '#ADD8E6',         // כחול בהיר
+  equipmentAndSoftware: '#98FB98',  // ירוק בהיר
+  officeExpenses: '#FFFACD',      // צהוב בהיר
+  vehicleMaintenance: '#FFCC99',  // כתום בהיר
+  depreciation: '#FFA07A',        // כתום רך
+  managementServices: '#B39DDB',  // סגול בהיר
+  professionalServices: '#FFB6C1', // ורוד בהיר
+  advertising: '#FFDAB9',         // אפרסק
+  rentAndMaintenance: '#66CDAA',  // טורקיז בהיר
+  postageAndCommunications: '#FFD700', // צהוב זהב בהיר
+  officeAndOther: '#AFEEEE',      // טורקיז עדין
 };

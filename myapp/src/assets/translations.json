@@ -51,7 +51,7 @@
       "categories": {
         "category": "קטגוריה",
         "subCategory": "תת קטגוריה",
-        "costOfRevenues": "עלות הכנסות",
+        "costOfRevenues": "עלות מכר",
         "generalExpenses": "הוצאות כלליות",
         "salariesAndRelated": "משכורות ונלוות",
         "commissions": "עמלות",
@@ -318,7 +318,7 @@
         "category": "Categoría",
         "subCategory": "Subcategoría",
         "costOfRevenues": "Costo de Ingresos",
-        "generalExpenses": "Gastos Generales",
+        "generalExpenses": "Costo de Venta",
         "salariesAndRelated": "Salarios y Relacionados",
         "commissions": "Comisiones",
         "equipmentAndSoftware": "Equipos y Software",

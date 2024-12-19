@@ -16,7 +16,7 @@ import { SnackbarProvider } from './components/SharedSnackbar';
 
 // Custom Theme
 const theme = createTheme({
-  direction: 'rtl',
+  direction: i18n.language === 'he' ? 'rtl' : 'ltr', // הגדרת הכיוון
   palette: {
     primary: {
       main: blue[600],     // Primary color
@@ -131,15 +131,16 @@ const App = () => {
     { path: '/upload', label: t('navbar.fileUpload') },
     { path: '/expenses', label: t('navbar.expenseManagement') },
   ];
-
+  const direction = i18n.language === 'he' ? 'rtl' : 'ltr';
+  document.body.dir = direction; 
   return (
     <I18nextProvider i18n={i18n}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <SnackbarProvider>
           <Router>
-            <div dir="rtl">
-              <AppBar pages={pages} />
+          <div dir={direction}>
+          <AppBar pages={pages} />
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/upload" element={<FileUpload />} />

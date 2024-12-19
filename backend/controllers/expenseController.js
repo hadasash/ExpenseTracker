@@ -137,54 +137,53 @@ const processExpenses = async (req, res) => {
                 }
 
                 const uniqueInvoiceId = createUniqueInvoiceId(
-                    expenseData.invoice.invoiceNumber, 
+                    expenseData.invoice.invoiceNumber,
                     expenseData.providerName,
                 );
 
                 expenseData.invoice.invoiceId = uniqueInvoiceId;
 
                 const existingInvoice = await InvoiceExpenseModel.findOne({ invoiceId: uniqueInvoiceId });
-                if (existingInvoice) {
-                    return res.status(400).json({ message: 'Invoice already exists', uniqueInvoiceId });
+                if (!existingInvoice) {
+
+
+                    const invoiceData = {
+                        ...expenseData,
+                        ...expenseData.invoice
+                    };
+
+                    const newExpense = new InvoiceExpenseModel(invoiceData);
+                    await newExpense.save();
+                    savedExpenses.push(newExpense);
                 }
-
-                const invoiceData = {
-                    ...expenseData,
-                    ...expenseData.invoice
-                };                
-
-                const newExpense = new InvoiceExpenseModel(invoiceData);
-                await newExpense.save();
-                savedExpenses.push(newExpense);
-
             } else if (expenseData.expenseType === 'salarySlip') {
                 if (!expenseData.salarySlip || !expenseData.salarySlip.employeeId || !expenseData.salarySlip.grossSalary || !expenseData.salarySlip.netSalary) {
                     return res.status(400).json({ message: "Missing required salary slip fields" });
                 }
 
                 const uniqueSalarySlipId = createUniqueSalarySlipId(
-                    expenseData.salarySlip.employeeId, 
+                    expenseData.salarySlip.employeeId,
                     expenseData.date,
                     expenseData.salarySlip.grossSalary,
-                );                
+                );
 
                 expenseData.salarySlip.salarySlipId = uniqueSalarySlipId;
 
                 const existingSalarySlip = await SalarySlipExpenseModel.findOne({ salarySlipId: uniqueSalarySlipId });
-                
-                if (existingSalarySlip) {
-                    return res.status(400).json({ message: 'Salary slip already exists', uniqueSalarySlipId });
+
+                if (!existingSalarySlip) {
+
+
+                    const salarySlipData = {
+                        ...expenseData,
+                        ...expenseData.salarySlip
+                    };
+
+                    const newExpense = new SalarySlipExpenseModel(salarySlipData);
+                    await newExpense.save();
+                    savedExpenses.push(newExpense);
+
                 }
-
-                const salarySlipData = {
-                    ...expenseData,
-                    ...expenseData.salarySlip
-                };
-
-                const newExpense = new SalarySlipExpenseModel(salarySlipData);
-                await newExpense.save();
-                savedExpenses.push(newExpense);
-
             } else {
                 return res.status(400).json({ message: "Invalid expense type detected" });
             }
@@ -213,7 +212,7 @@ const processExpenses = async (req, res) => {
                     fs.unlinkSync(filePath);
                 }
             } catch (err) {
-                console.error(`Error deleting file ${ filePath }: `, err);
+                console.error(`Error deleting file ${filePath}: `, err);
             }
         }
     }
@@ -242,11 +241,11 @@ const saveUploadedFile = (file) => {
 
 const deleteExpense = async (req, res) => {
     const { expenseId } = req.params;
-    
+
     console.log('Received delete request for expense ID:', expenseId);
     console.log('Request params:', req.params);
     console.log('Request body:', req.body);
-    
+
     try {
         // Attempt to delete from all possible expense models
         const models = [
@@ -259,7 +258,7 @@ const deleteExpense = async (req, res) => {
         let deletedExpense = null;
         for (const { name, model } of models) {
             console.log(`Attempting to delete from ${name} with ID: ${expenseId}`);
-            
+
             try {
                 // Try finding the document first to log its details
                 const foundDocument = await model.findById(expenseId);
@@ -267,7 +266,7 @@ const deleteExpense = async (req, res) => {
 
                 if (foundDocument) {
                     deletedExpense = await model.findByIdAndDelete(expenseId);
-                    
+
                     if (deletedExpense) {
                         console.log(`Successfully deleted expense from ${name}`);
                         break;
@@ -280,22 +279,22 @@ const deleteExpense = async (req, res) => {
 
         if (!deletedExpense) {
             console.log(`No expense found with ID: ${expenseId} in any model`);
-            return res.status(404).json({ 
-                message: 'Expense not found', 
+            return res.status(404).json({
+                message: 'Expense not found',
                 expenseId: expenseId,
                 searchedModels: models.map(m => m.name)
             });
         }
 
         console.log(`Expense ${expenseId} deleted successfully`);
-        res.status(200).json({ 
-            message: 'Expense deleted successfully', 
-            deletedExpense: deletedExpense 
+        res.status(200).json({
+            message: 'Expense deleted successfully',
+            deletedExpense: deletedExpense
         });
     } catch (error) {
         console.error('Unexpected error deleting expense:', error);
-        res.status(500).json({ 
-            message: 'Error deleting expense', 
+        res.status(500).json({
+            message: 'Error deleting expense',
             error: error.message,
             stack: error.stack
         });
@@ -317,7 +316,7 @@ const updateExpense = async (req, res) => {
 
     } catch (error) {
         console.error('Error updating expense:', error);
-        
+
         // Handle specific mongoose validation errors
         if (error.name === 'ValidationError') {
             return res.status(400).json({
@@ -344,10 +343,10 @@ const updateExpense = async (req, res) => {
         }
 
         // Generic server error
-        res.status(500).json({ 
+        res.status(500).json({
             message: 'Server error updating expense',
             success: false,
-            error: error.message 
+            error: error.message
         });
     }
 };
@@ -361,7 +360,7 @@ const cleanProviderName = (providerName) => {
 };
 
 const createUniqueInvoiceId = (invoiceNumber, providerName) => {
-    const sanitizedProviderName = cleanProviderName(providerName);    
+    const sanitizedProviderName = cleanProviderName(providerName);
     return `${invoiceNumber}-${sanitizedProviderName}`;
 };
 
@@ -394,7 +393,7 @@ const addExpenseManually = async (req, res) => {
         }
 
         const formattedDate = new Date(date);
-        
+
         let intervalEnd;
         if (manualInterval && !intervalEndDate) {
             intervalEnd = new Date(formattedDate);
@@ -419,7 +418,7 @@ const addExpenseManually = async (req, res) => {
         // If no interval is specified, just save the single expense
         if (!manualInterval) {
             const newExpense = new ManualExpenseModel(baseExpenseData);
-            
+
             // Perform currency conversion if needed
             if (currency !== 'ILS') {
                 await newExpense.convertToILS();
@@ -427,7 +426,7 @@ const addExpenseManually = async (req, res) => {
                 newExpense.convertedAmountILS = manualTotalAmount;
                 newExpense.conversionRate = 1;
             }
-            
+
             await newExpense.save();
             return res.status(201).json({ message: 'Expense added successfully', expense: newExpense });
         }
@@ -443,7 +442,7 @@ const addExpenseManually = async (req, res) => {
             };
 
             const newExpense = new ManualExpenseModel(expenseData);
-            
+
             // Perform currency conversion if needed
             if (currency !== 'ILS') {
                 await newExpense.convertToILS();
@@ -451,7 +450,7 @@ const addExpenseManually = async (req, res) => {
                 newExpense.convertedAmountILS = manualTotalAmount;
                 newExpense.conversionRate = 1;
             }
-            
+
             await newExpense.save();
             expenses.push(newExpense);
 
@@ -462,8 +461,8 @@ const addExpenseManually = async (req, res) => {
             }
         }
 
-        res.status(201).json({ 
-            message: 'Recurring expenses added successfully', 
+        res.status(201).json({
+            message: 'Recurring expenses added successfully',
             expenseCount: expenses.length,
             expenses: expenses,
             automaticEndDate: intervalEnd

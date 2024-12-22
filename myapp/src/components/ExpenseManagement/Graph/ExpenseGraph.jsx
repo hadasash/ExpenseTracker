@@ -51,7 +51,7 @@ const ExpenseGraph = ({ expenses, loading }) => {
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>{t('graphTitle')}</Typography>
+      <Typography variant="h6" color="textSecondary">{t('graphTitle')}</Typography>
       <PieChartGraph
         data={subCategoryData}
         t={t}

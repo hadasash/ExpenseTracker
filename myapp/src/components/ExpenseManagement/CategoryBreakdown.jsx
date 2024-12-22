@@ -100,7 +100,7 @@ const CategoryBreakdown = ({ selectedMonth, year, expenses, loading }) => {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold' }}>
+      <Typography variant="h6" color="textSecondary" sx={{ mb: 3 }}>
         {t('expenseBreakdown')} - {t(selectedMonth)}/{year}
       </Typography>
 
@@ -141,7 +141,8 @@ const CategoryBreakdown = ({ selectedMonth, year, expenses, loading }) => {
           </Paper>
 
           {expandedCategories.includes(mainCategory) && (
-            <Box sx={{ pl: 3, mt: 2 }}>
+            <Box sx={{ pl: 3, mt: 2, display: 'flex',
+              flexDirection: 'column',   flexGrow: 1, }}>
               {Object.entries(subCategories)
                 .filter(([subCategory]) => {
                   const expense = expenses.find(
